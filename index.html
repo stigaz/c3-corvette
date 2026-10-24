@@ -1,0 +1,1109 @@
+<!doctype html><html lang="nb"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><style>:root{color-scheme:light}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style><title>C3 Corvette Håndbok</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: sticky verktøylinje med faner, årstall-stripe, deretter innhold i én kolonne (maks 1080px). Tachometer-stripe viser rødmerking. */
+:root{
+  --paper:#ECEEEA; --panel:#F8F9F6; --ink:#14202B; --muted:#586670; --line:#CDD3CD;
+  --hl-sb:#2E7D4F; --hl-82:#7B4FA3; --hl-bb:#C2570C; --red:#B01E2B; --blue:#1D5C8F; --ochre:#8F6210; --track:#9FB0BA; --chip:#DDE2DC;
+  --f-display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F151B; --panel:#17202A; --ink:#E7ECEF; --muted:#9AA9B4; --line:#2A3844;
+    --hl-sb:#5CC98A; --hl-82:#B995E0; --hl-bb:#F59A5A; --red:#F0575D; --blue:#69B0E6; --ochre:#E0A94A; --track:#3B4B58; --chip:#1F2A35; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F151B; --panel:#17202A; --ink:#E7ECEF; --muted:#9AA9B4; --line:#2A3844;
+  --hl-sb:#5CC98A; --hl-82:#B995E0; --hl-bb:#F59A5A; --red:#F0575D; --blue:#69B0E6; --ochre:#E0A94A; --track:#3B4B58; --chip:#1F2A35; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:0}
+.wrap{max-width:1080px;margin:0 auto;padding-block:18px 56px}
+h1,h2,h3{font-family:var(--f-display);font-weight:800;line-height:1;margin:0;text-wrap:balance;letter-spacing:.01em}
+a{color:var(--blue)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+.mast{display:flex;gap:16px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;padding-bottom:14px;border-bottom:3px solid var(--ink)}
+.mast h1{font-size:clamp(44px,9vw,84px);text-transform:uppercase}
+.mast h1 span{color:var(--red)}
+.mast p{margin:0;max-width:44ch;color:var(--muted);font-size:14px}
+.stats{font-family:var(--f-mono);font-size:12px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);display:flex;gap:4px;overflow-x:auto;padding-block:10px;border-bottom:1px solid var(--line)}
+.nav button{border:0;background:transparent;padding:8px 14px;border-radius:2px;font-weight:600;white-space:nowrap;border-bottom:3px solid transparent}
+.nav button[aria-selected="true"]{border-bottom-color:var(--red)}
+.nav button:hover{background:var(--chip)}
+
+.years{display:flex;gap:6px;overflow-x:auto;padding-block:14px 6px}
+.years button{flex:0 0 auto;min-width:52px;border:1px solid var(--line);background:var(--panel);padding:6px 8px 4px;text-align:center;border-radius:2px}
+.years button b{display:block;font-family:var(--f-display);font-size:26px;line-height:1}
+.years button small{font-family:var(--f-mono);font-size:10px;color:var(--muted)}
+.years button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.years button[aria-pressed="true"] small{color:var(--paper)}
+
+.yhead{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 24px;align-items:end;padding-block:18px 8px}
+.yhead h2{font-size:clamp(56px,13vw,120px);color:var(--red)}
+.yhead .nm{font-family:var(--f-display);font-size:24px;font-weight:700;text-transform:uppercase}
+.yhead .meta{font-family:var(--f-mono);font-size:12px;color:var(--muted);text-align:right}
+.lead{max-width:68ch;margin:6px 0 4px;font-size:16px}
+.pn{display:flex;gap:8px;margin-block:10px}
+.pn button{border:1px solid var(--line);background:var(--panel);padding:6px 12px;border-radius:2px}
+.pn button:disabled{opacity:.4;cursor:default}
+
+section.blk{margin-top:30px}
+section.blk>h3{font-size:30px;text-transform:uppercase;padding-bottom:6px;border-bottom:2px solid var(--ink);margin-bottom:12px;display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+section.blk>h3 small{font-family:var(--f-body);font-size:12px;font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0}
+ul.l{margin:0;padding-left:1.1em;display:grid;gap:6px;max-width:80ch}
+ul.l li::marker{color:var(--red)}
+
+.scroll{overflow-x:auto;border:1px solid var(--line);background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:13.5px}
+th,td{padding:8px 10px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{font-family:var(--f-mono);font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--chip);white-space:nowrap}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f-mono)}
+td .code{font-weight:600}
+td .sub{display:block;color:var(--muted);font-size:12px}
+.tach{display:block;width:120px;height:8px;margin-top:4px;background:linear-gradient(90deg,var(--track) var(--p),var(--red) var(--p))}
+.rpm{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+.pill{display:inline-block;font-family:var(--f-mono);font-size:11px;padding:1px 7px;border-radius:2px;border:1px solid currentColor;white-space:nowrap}
+.pill.man{color:var(--blue)} .pill.aut{color:var(--ochre)} .pill.unk{color:var(--muted)}
+
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.three h4{margin:0 0 8px;font-family:var(--f-mono);font-size:12px;text-transform:uppercase;letter-spacing:.08em;border-top:3px solid var(--red);padding-top:6px}
+@media (max-width:820px){.three{grid-template-columns:minmax(0,1fr)}.yhead{grid-template-columns:minmax(0,1fr)}.yhead .meta{text-align:left}}
+
+.note{border-left:4px solid var(--ochre);background:var(--panel);padding:10px 14px;max-width:80ch;margin-block:12px;font-size:14px}
+.note b{font-family:var(--f-mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+
+.ctl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-block:16px}
+.ctl input[type=search]{flex:1 1 220px;min-width:0;padding:9px 12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:2px;font:inherit}
+.seg{display:inline-flex;border:1px solid var(--line)}
+.seg button{border:0;background:var(--panel);padding:8px 12px}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+
+.bars{display:grid;gap:5px}
+.bar{display:grid;grid-template-columns:150px minmax(0,1fr) 70px;gap:10px;align-items:center;font-size:13px}
+.bar .lab{line-height:1.2}
+.bar .lab small{display:block;color:var(--muted);font-size:11px}
+.bar .tr{height:16px;background:var(--chip);position:relative}
+.bar .fl{position:absolute;inset:0 auto 0 0}
+.bar .fl.man{background:var(--blue)} .bar .fl.aut{background:repeating-linear-gradient(135deg,var(--ochre) 0 6px,transparent 6px 9px);outline:1px solid var(--ochre);outline-offset:-1px} .bar .fl.unk{background:var(--muted)}
+.bar .v{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:560px){.bar{grid-template-columns:96px minmax(0,1fr) 54px;gap:6px;font-size:12px}}
+
+.tl{display:grid;gap:0}
+.tl details{border-top:1px solid var(--line);padding-block:10px}
+.tl summary{cursor:pointer;display:flex;gap:14px;align-items:baseline;list-style:none}
+.tl summary::-webkit-details-marker{display:none}
+.tl summary b{font-family:var(--f-display);font-size:34px;color:var(--red);min-width:70px}
+.tl details[open] summary{margin-bottom:8px}
+.src li{margin-bottom:4px;word-break:break-word}
+.small{font-size:12.5px;color:var(--muted)}
+.pill.k-src{color:var(--blue)} .pill.k-gen{color:var(--muted)}
+.gl{display:grid;gap:0}
+.gl details{border-top:1px solid var(--line);padding-block:10px}
+.gl summary{cursor:pointer;font-weight:600;font-size:16px}
+.gl details[open] summary{margin-bottom:8px}
+.steps{padding-left:22px;max-width:75ch} .steps li{margin-bottom:6px}
+.hl-sb{--hl:var(--hl-sb)} .hl-82{--hl:var(--hl-82)} .hl-bb{--hl:var(--hl-bb)}
+tr[class^="hl-"]>td{background:color-mix(in srgb,var(--hl) 14%,var(--panel))}
+tr[class^="hl-"]>td:first-child{box-shadow:inset 5px 0 0 var(--hl)}
+.hlkey{display:flex;gap:8px 16px;flex-wrap:wrap;margin:10px 0;font-size:13px}
+.hlkey span{display:inline-flex;align-items:center;gap:6px}
+.hlkey i{width:14px;height:14px;border-radius:2px;background:var(--hl);display:inline-block}
+.dots{display:flex;gap:3px;justify-content:center;min-height:6px;margin-top:3px}
+.dots i{width:6px;height:6px;border-radius:50%;background:var(--hl)}
+.years button[aria-pressed="true"] .dots i{outline:1px solid var(--paper)}
+.cl{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.cl label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.cl input{margin-top:4px;flex:0 0 auto}
+textarea,td input[type=text],.ctl input[type=text],.ctl select{width:100%;padding:8px 10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:2px;font:inherit}
+.ctl select{width:auto} td.num input{text-align:right}
+tr.cmp-diff th,tr.cmp-diff td{background:color-mix(in srgb,var(--ochre) 14%,var(--panel))}
+tfoot th{font-size:14px;color:var(--ink)}
+@media print{#nav,.ctl,header{display:none!important}}
+.empty{padding:14px;border:1px dashed var(--line);color:var(--muted)}
+@media (prefers-reduced-motion: no-preference){html{scroll-behavior:smooth}}
+</style></head><body>
+
+<div class="wrap">
+  <header class="mast">
+    <div>
+      <h1>C3 <span>Corvette</span></h1>
+      <div class="stats" id="stats"></div>
+    </div>
+    <p>Årsmodell for årsmodell, 1968–1982. Motorer, gir, tachometerets rødmerking, målte 0–60 mph og en kjøpsguide.</p>
+  </header>
+
+  <nav class="nav" role="tablist" aria-label="Visning" id="nav"></nav>
+  <main id="view"></main>
+</div>
+
+<script>
+/* ---------- DATA ---------- */
+const R=(c,n,hp,r,t,tr,ac,no,ta)=>({c,n,hp,r,t,tr,ac,no:no||"",ta:ta||null});
+const M4="4-trinns manuell", AUT="M40 automat";
+
+const Y=[
+{y:1968,nm:"Første C3: Sting Ray",prod:"28 566",pc:"",ac:5664,
+ sum:"Helt nytt karosseri og interiør, men motorprogrammet er rett fra 1967. Første årgang hadde svak byggekvalitet.",
+ rows:[
+  R("L30 (base)","327 cid",300,"B",5300,"3-trinns manuell (std, bare noen hundre solgt), M20/M21 4-trinns eller M40 Turbo Hydra-Matic","Ja","10,0:1. Også oppgitt som L75."),
+  R("L79","327 cid",350,"B",6000,"M20 eller M21 4-trinns. Aldri automat.","Ja (motorkode HP)","11,0:1. Motorkode HT = manuell, HP = manuell med AC og servo."),
+  R("L36","427 cid",390,"B",5600,"4-trinns manuell eller "+AUT,"Ja","10,25:1. Én 4-spjelds forgasser."),
+  R("L68","427 cid",400,"B",5600,"4-trinns manuell eller "+AUT,"Ja","3×2-spjelds forgasser."),
+  R("L71","427 cid",435,"B",6500,"4-trinns manuell (M21/M22) eller "+AUT,"Ja","11,0:1. 3×2-spjelds. 460 lb-ft @ 4000."),
+  R("L89","427 cid",435,"B",6500,"Som L71","Ja","L71 med aluminiumshoder."),
+  R("L88","427 cid","430 (anslått ca. 560)","B",6500,"Racing-motor. M22 i praksis.","Nei","Oppgitt 430 hk, reell effekt langt høyere. Ca. 80 biler.*")
+ ],
+ buy:{find:["Vanligst er 327/300 med 3-trinns manuell eller Powerglide. L79 og 427-ene er mye sjeldnere.","Cabriolet (18 630) er vanligere enn coupé (9 936) dette året.","Krom støtfanger foran og bak."],
+      check:["Dårlig byggekvalitet fra fabrikk. Se etter tidligere reparasjoner, dårlig pasning og lekkasjer rundt T-topp.","Vakuumstyrte frontlykter og viskerluke feiler og lekker ofte.","Stålburet (stolper, bak hjulhus, under T-topp) og rammen rustner.","Verifiser 427: blokk 3916321. 327 har blokk 3914678 for både 300 og 350 hk; L79 skilles på motorkode og detaljer som 8-tommers demper og større ventiler."],
+      parts:["Tachometer for 427 finnes i 5600 (390/400 hk) og 6500 (435 hk).","Karosseri, interiør og mekanikk reproduseres bredt, også for denne årgangen."]}},
+
+{y:1969,nm:"350 kommer, ZL1 i én årgang",prod:"38 762",pc:"",ac:11859,
+ sum:"Småblokka vokser fra 327 til 350 kubikktommer. L79 blir L46. Aluminiums-ZL1 finnes bare dette året.",
+ rows:[
+  R("Base","350 cid",300,"B",5300,"3-trinns manuell (std), 4-trinns, "+AUT,"Ja","380 lb-ft @ 3200. 300 hk @ 4800. R&T testet base med automat."),
+  R("L46","350 cid",350,"B",6000,"Kun 4-trinns manuell. Aldri automat.","Ja","350 hk @ 5800. Mer radikal kam enn base."),
+  R("L36","427 cid",390,"B",5600,"4-trinns manuell eller "+AUT,"Ja",""),
+  R("L68","427 cid",400,"B",5600,"4-trinns manuell eller "+AUT,"Ja","3×2-spjelds."),
+  R("L71","427 cid",435,"B",6500,"4-trinns manuell eller "+AUT,"Ja","11,0:1. 435 hk @ 5800, 460 lb-ft @ 4000."),
+  R("L89","427 cid",435,"B",6500,"Som L71","Ja","Aluminiumshoder, ca. 832 USD ekstra."),
+  R("L88","427 cid","430 (anslått ca. 560)","B",6500,"M22","Nei","Racing. Ca. 116 biler.*"),
+  R("ZL1","427 cid, aluminium",430,"B",null,"M22","Nei","Svært få biler (2 Corvette).*")
+ ],
+ buy:{find:["Mest tilgjengelige av de tidlige: 350/300 med automat, og L46 for de som vil ha en brisk småblokk.","Alle krom-støtfangere, T-topp coupé og cabriolet."],
+      check:["L46 skal være kun manuell. Sjekk at motorprefiks og girkasse har kompatible datoer.","Mange 427 er etterlignet. Verifiser blokk, prefiks, tank-sticker og dokumentasjon.","ZL1 og L88 er så sjeldne at alle tilbud uten uavhengig dokumentasjon bør avvises."],
+      parts:["Tachometer finnes for 5300 (base), 5600 (390/400 hk) og 6500 (435/L88).","Som for 1968 er reproduksjonsutvalget stort."]}},
+
+{y:1970,nm:"LT-1 og 454",prod:"17 316",pc:"",ac:6659,
+ sum:"Lavest produksjon siden 1962. LT-1 og 454 kommer, 427 er borte. Dette er småblokkas høydepunkt.",
+ rows:[
+  R("Base","350 cid",300,"B",5300,"4-trinns manuell eller "+AUT,"Ja","300 hk @ 4800."),
+  R("L46","350 cid",350,"B",6000,"Kun 4-trinns manuell (M21/M22). Ikke M40.","Ja","4 910 biler. Motorprefiks fra kildelista: CTN, CTH, CTO (AC), CTJ (AC), CTP, CTQ."),
+  R("LT-1","350 cid",370,"B",6500,"Kun M21 4-trinns (M22 via ZR-1-pakke, 25 stk). Ikke automat.","Nei","370 hk @ 6000. 11,0:1. 1 287 biler. Solide løftere, 780 CFM Holley, transistorformer."),
+  R("LS5","454 cid",390,"B",5600,"M21 4-trinns eller "+AUT,"Ja","4 473 biler. Hydrauliske løftere.")
+ ],
+ buy:{find:["Rundt 29 % av bilene har automat (M40, 5 102 biler). L46 (4 910) og LS5 (4 473) er mye vanligere enn LT-1 (1 287).","LS5 er den enkleste big blocken å finne, og den er vanskelig å forveksle med noe annet."],
+      check:["LT-1 skal ikke ha AC og må ha M21 eller M22. Verifiser prefiks og stempling, siden klonene er mange.","L46 skal ha 4-trinns. Automat i en «L46» er en rød flagg.","ZR-1 er kun 25 biler dette året."],
+      parts:["Tachometer 6500 til LT-1/LS6 (1970–71) og 5600 til 454/390 finnes."]}},
+
+{y:1971,nm:"Lavere kompresjon, LS6",prod:"21 801",pc:"",ac:11481,
+ sum:"Lavere kompresjon gir lavere hk-tall, men testresultatene er fortsatt sterke. Siste år med LS6.",
+ rows:[
+  R("Base","350 cid",270,"B",5300,M4+" eller "+AUT,"Ja",""),
+  R("LT-1","350 cid",330,"B",6500,"Kun M21 4-trinns","Mulig (1971)","9,0:1. Brutto og netto vises i hk- og momentkolonnen."),
+  R("LS5","454 cid",365,"B",5600,"M21 4-trinns eller "+AUT,"Ja","Et forumsinnlegg oppgir 6000 i stedet for 5600. Enkelte kilder oppgir netto ca. 270 hk, Wikipedia 285."),
+  R("LS6","454 cid",425,"B",6500,"M21/M22 4-trinns. Automat er oppført i karburatorlister.","Nei","425 hk @ 5600, 475 lb-ft @ 4000. 9,0:1. Aluminiumshoder. Litt hevet panser med to luftinntak og «454»-merker.")
+ ],
+ buy:{find:["Base 350 med automat er vanlig. LS5 er mulig å finne.","LT-1 og LS6 er kjøpt for racing og ofte tungt brukt."],
+      check:["Verifiser LS6: panser, 6500-tachometer, aluminiumshoder og dokumenter. Klonene er mange.","LT-1 uten AC er det opprinnelige oppsettet; en bil med AC bør forklares."],
+      parts:["LS5 5600 og LS6 6500 tachometer finnes."]}},
+
+{y:1972,nm:"Siste krom, siste LT-1",prod:"27 004",pc:"",ac:17011,
+ sum:"Hk oppgis nå som SAE netto, så tallene faller på papiret. Siste år for krom-støtfangere foran og bak.",
+ rows:[
+  R("Base","350 cid",200,"N",5300,M4+" eller "+AUT,"Ja",""),
+  R("LT-1","350 cid",255,"N",6500,"Kun M21 4-trinns","Ja","Tachometer 6500 uten AC. Med AC er rødmerkingen 5600.",{v:5600,l:"med AC"}),
+  R("LS5","454 cid",270,"N",null,"M21 4-trinns eller "+AUT,"Ja","Rødmerking ikke verifisert.")
+ ],
+ buy:{find:["27 004 produsert. LT-1 (1 741 biler)*, hvor 20 er ZR-1.","Siste krom både foran og bak, ettertraktet blant dem som vil ha den klassiske C3-looken."],
+      check:["LT-1: tachometer 6500 uten AC og 5600 med AC. Feil tachometer er et signal om at bilen er endret.","Kontroller at viskerluke og avtakbart bakvindu fungerer og ikke er endret."],
+      parts:["Tachometer for 1972: base 5300 og LT-1 6500."]}},
+
+{y:1973,nm:"Gummifront, L82 kommer",prod:"30 464",pc:"",ac:21578,
+ sum:"Ny gummi-nese foran, radialdekk og stålbjelker i dørene. L82 introduseres som valgfri småblokk.",
+ rows:[
+  R("L48","350 cid",190,"N",null,"M20 4-trinns eller "+AUT,"Ja","190 hk @ 4400. Rødmerking ikke verifisert."),
+  R("L82","350 cid",250,"N",6000,"M20/M21 4-trinns eller "+AUT,"Ja","Tachometer 6000 uten AC, 5600 med AC.",{v:5600,l:"med AC"}),
+  R("LS4","454 cid",275,"N",null,"M20/M21 4-trinns eller "+AUT,"Ja","Rødmerking ikke verifisert. Noen kilder oppgir 270 hk.")
+ ],
+ buy:{find:["L48 med automat er klart mest vanlig.","L82 er den ettertraktede småblokka. LS4 gir best dreiemoment."],
+      check:["Urethan-nesen sprekker og er ofte malt om. Se etter sprekker og dårlig pasning.","L82 skal ha rett tachometer (6000 uten AC / 5600 med AC)."],
+      parts:["Alle tachometre reproduseres. Gjelder også L82 med AC."]}},
+
+{y:1974,nm:"Siste 454",prod:"37 502",pc:"*",
+ sum:"Siste årgang med big block (LS4). Bakre støtfanger går over til urethan.",
+ rows:[
+  R("L48","350 cid",195,"N",null,"M20 4-trinns eller "+AUT,"Ja","195 hk.*"),
+  R("L82","350 cid",250,"N",null,"M20/M21 4-trinns eller "+AUT,"Ja","Rødmerking ikke verifisert. Trolig som 1973."),
+  R("LS4","454 cid",270,"N",null,"Manuell eller "+AUT,"Ja","Siste big block i C3.")
+ ],
+ buy:{find:["37 502 biler. LS4 er ettertraktet som siste big block.","L82 med 4-trinns er mer sjelden."],
+      check:["Urethan-støtfangere: sprekker og dårlig lakk.","LS4 skal verifiseres mot motorprefiks og dokumentasjon."],
+      parts:["Urethan-deler reproduseres, men pasning varierer."]}},
+
+{y:1975,nm:"Katalysator og siste cabriolet",prod:"38 465",pc:"*",
+ sum:"Katalysator og blyfri bensin gir de laveste hk-tallene i C3. Siste cabriolet til 1986.",
+ rows:[
+  R("L48","350 cid",165,"N",null,"M20 4-trinns eller "+AUT,"Ja","Svakeste motor i C3. Rødmerking ikke verifisert."),
+  R("L82","350 cid",205,"N",5600,"M20/M21 4-trinns eller "+AUT,"Ja","Tachometer 5600 med AC (1975–77).")
+ ],
+ buy:{find:["Cabriolet er lett å finne sammenlignet med senere.","Mange har automat og L48."],
+      check:["Katalysator og eksos: se etter fjernede komponenter.","Cabriolet: kapp, vannlekkasjer og rust i stålburet."],
+      parts:["Tachometer for 1975–77 L82 med AC (5600) finnes."]}},
+
+{y:1976,nm:"Siste «Stingray»",prod:"46 558",pc:"*",
+ sum:"Navnet «Stingray» brukes for siste gang. Ny plattform (Series Y). Servostyring og servobremser blir standard.",
+ rows:[
+  R("L48","350 cid",180,"N",null,M4+" eller "+AUT,"Ja","California: kun L48 med automat."),
+  R("L82","350 cid",210,"N",5600,"M20/M21 4-trinns eller "+AUT,"Ja","Tachometer 5600 med AC.")
+ ],
+ buy:{find:["Høyt volum. Lett å finne i mange farger.","L82 er verdt å lete etter."],
+      check:["California-biler er alltid L48 med automat.","Se etter rust i stålburet."],
+      parts:["Tachometer finnes."]}},
+
+{y:1977,nm:"Nesten bare automat",prod:"49 213",pc:"*",
+ sum:"Få endringer. Over 83 % av bilene ble bestilt med automat, så manuell er sjelden.",
+ rows:[
+  R("L48","350 cid",180,"N",null,M4+" eller "+AUT,"Ja",""),
+  R("L82","350 cid",210,"N",5600,"M20/M21 4-trinns eller "+AUT,"Ja","Tachometer 5600 med AC.")
+ ],
+ buy:{find:["Over 80 % automat. Manuell L82 er det eldre samlere vil ha.","Mange biler i god stand."],
+      check:["L82 manuell: R&T målte 6,8 s 0–60. Verifiser at dette ikke er en endret bil.","Standard rust-sjekk i stålburet."],
+      parts:["Alle tachometre reproduseres."]}},
+
+{y:1978,nm:"Fastback og Pace Car",prod:"46 776",pc:"",
+ sum:"Nytt, stort bakvindu (fastback). Silver Anniversary og Indy Pace Car. L82 går opp til 220 hk.",
+ rows:[
+  R("L48","350 cid","185 (175 CA/høyde)","N",null,M4+" eller "+AUT,"Ja",""),
+  R("L82","350 cid",220,"N",5600,"M20/M21 4-trinns eller "+AUT,"Ja","220 hk @ 5200. Tachometer 5600 (kilder uenige).")
+ ],
+ buy:{find:["Pace Car og Silver Anniversary er lett å finne i USA.","L82 med 4-trinns er den skarpeste av 70-tallets C3."],
+      check:["Pace Car: verifiser at bilen er original (spoilere, striper, utstyr). Klonene er mange.","L82-tachometer varierer; sjekk mot reproduksjonskatalog."],
+      parts:["Spoilere og tachometer reproduseres."]}},
+
+{y:1979,nm:"Rekordåret",prod:"53 807",pc:"",
+ sum:"Største C3-produksjon noensinne. Åpne lyddempere gir +5 hk.",
+ rows:[
+  R("L48","350 cid",195,"N",null,M4+" eller "+AUT,"Ja",""),
+  R("L82","350 cid",225,"N",5600,"M20/M21 4-trinns eller "+AUT,"Ja","Tachometer endret i 1979 (3 versjoner ifølge forum).",{v:6000,l:"senere i 1979"})
+ ],
+ buy:{find:["Aller lettest å finne: 53 807 biler.","L82 manuell er den raskeste."],
+      check:["Mange biler, så vær kresen på stand og dokumentasjon."],
+      parts:["Alle tachometre finnes."]}},
+
+{y:1980,nm:"L82 kun med automat",prod:"40 614",pc:"*",
+ sum:"Utslippskrav kutter hk. L82 kan ikke lenger få manuell. California-biler får 305.",
+ rows:[
+  R("L48","350 cid",190,"N",null,M4+" eller "+AUT,"Ja","190 hk @ 4400, 280 lb-ft."),
+  R("L82","350 cid",230,"N",6000,"Kun "+AUT+" (ingen manuell)","Ja","Raskeste 1980-C3."),
+  R("LG4","305 cid",180,"N",null,"Kun automat","Ja","Kun California.")
+ ],
+ buy:{find:["L82 med automat er raskest.","California-biler har 305."],
+      check:["305 i California-biler er ikke originalt i andre stater."],
+      parts:["Tachometer for 1980 L82 (6000) finnes."]}},
+
+{y:1981,nm:"L81 – eneste motor",prod:"40 606",pc:"*",
+ sum:"Én eneste motor: L81 (190 hk). Manuell var fortsatt tilgjengelig.",
+ rows:[
+  R("L81","350 cid",190,"N",null,M4+" eller "+AUT,"Ja","Rødmerking ikke verifisert.")
+ ],
+ buy:{find:["Manuell er sjelden.","Lite å velge mellom motorer."],
+      check:["Datastyrt forgasser kan være krevende å justere."],
+      parts:["Grunnleggende deler er lett tilgjengelig."]}},
+
+{y:1982,nm:"Collector Edition",prod:"25 407",pc:"*",
+ sum:"Siste C3. Cross-Fire-innsprøyting (L83) og kun 4-trinns automat. Collector Edition har glassluke bak.",
+ rows:[
+  R("L83","350 cid",200,"N",5700,"Kun 4-trinns automat med overdrive","Ja","200 hk @ 4200, 285 lb-ft @ 2800. 9,0:1. Cross-Fire Injection (to gasspjeldhus).")
+ ],
+ buy:{find:["Collector Edition (6 759 biler)* er mest ettertraktet.","Alle har automat."],
+      check:["Cross-Fire-systemet er komplekst og kan være vanskelig å få til å gå bra. Les om det før du kjøper.","Collector Edition: original lakk, striper og turbinhjul."],
+      parts:["Cross-Fire-deler finnes, men er mer spesielle."]}}
+];
+
+/* Endringer fra år til år: Wikipedia (Chevrolet Corvette C3), supplert med øvrige kilder. */
+const CHG={
+1968:[
+"Helt nytt karosseri og interiør. Coupéen er en notchback med nesten vertikal, avtakbar bakrute og avtakbare T-top-paneler (stropper og vinylposer til panelene følger med, og det er et oppbevaringsbrett bak). Cabriolet har oppfellbart kalesje, og en hardtop med glassrute er ekstrautstyr.",
+"Skjulte frontlykter og skjulte vindusviskere, begge vakuumstyrt. Wikipedia kaller viskerluken problematisk. Utvendige dørhåndtak ligger flush og har egen utløserknapp. Frontskjermene har funksjonelle kjøleluftåpninger. Ventilasjonsvinduene i dørene er borte til fordel for «Astro Ventilation».",
+"Interiør: store runde speedometer og tachometer, med hjelpeinstrumenter for oljetrykk, vanntemperatur, amperemeter, drivstoff og analog klokke. Et fiberoptisk panel overvåker utvendig lys. Det er ikke hanskerom, og batteriet er flyttet bak setene.",
+"Nytt ekstrautstyr: varmetråd i bakruten, tyverialarm, blanke hjuldeksler og AM/FM-stereo.",
+"Understellet er overført fra C2: uavhengig opphengning og skivebremser på alle fire hjul.",
+"Motorer: base L30 327 (300 hk @ 5000, 360 lb-ft @ 3400, 10,0:1) og L79 327 (350 hk @ 5800). Big block 427 utgjør nesten halvparten av produksjonen: L36 390 hk (firespjelds), L68 400 hk (tri-power), L71 435 hk (tri-power, 11,0:1, 460 lb-ft @ 4000), L89 (L71 med aluminiumshoder) og L88 (oppgitt 430 hk, race-motor med aluminiumshoder, 12,5:1, 485 lb-ft @ 4000).",
+"Girkasser: 3-trinns Turbo Hydra-Matic (M40) erstatter 2-trinns Powerglide. Manuelt finnes 3-trinns (bare noen hundre solgt), 4-trinns M20 (vid), M21 (tett) og M22 «Rock Crusher».",
+"Hjul: 7 tommer brede stålfelger med F70×15 diagonaldekk. Hvite eller røde striper var valgfritt.",
+"Panser: lav profil på småblokk. Big block har hevet panser med to blinde luftinntak og «427»-merker.",
+"Sjeldne valg: L88 (80 biler), J56 kraftige bremser (81), UA6 alarm (388), L89 aluminiumshoder (624).",
+"Biler med AC: 5 664 (20 %). Bilen fikk dårlig omtale for byggekvaliteten."
+],
+1969:[
+"Småblokka vokser fra 327 til 350 cid uten økning i hk. Base ZQ3 gir 300 hk @ 4800, 380 lb-ft og 10,25:1. L79 blir L46 (350 hk @ 5600, 11,0:1).",
+"Big block L36, L68, L71 og L88 videreføres. L88 tilbys for siste gang, og ZL1 (helaluminium 427, oppgitt 430 hk) tilbys bare dette året. Wikipedia oppgir at ZL1 gikk kvartmil på 10,89 s, at tester antyder ca. 460 hk brutto (376 netto), og at Motor Trend kalte den den raskeste produksjonsbilen.",
+"Hjulbredden øker fra 7 til 8 tommer. Dekk med hvite bokstaver tilbys første gang, og dekk med røde striper siste gang.",
+"Syv akselutvekslinger fra 2,73 til 4,56. Standard er 3,08 med automat og 3,36 med manuell. Positraction sitter på over 95 % av bilene.",
+"Utvendig: «Stingray» skrives nå som ett ord på skjermene. Dørhåndtakene åpnes med en fingerplate, så den separate utløserknappen er borte. Ryggelys i de innerste baklyktene, frontlyktspylere og helt svart grill. Sidemonterte eksosrør og pynt på skjermenes luftespalter var valgfritt, og bare dette året.",
+"Interiør: nye dørpaneler gir mer skulderplass, nakkestøtter er standard, rattet krymper fra 16 til 15 tommer, tenningslåsen flyttes til rattstammen og det er kartlommer foran passasjeren.",
+"Coupé utgjør 57 % av produksjonen og selger bedre enn cabriolet for første gang. En arbeidskonflikt og forsinket 1970-lansering forlenget modellåret til desember 1969.",
+"Apollo 12: tre gull-og-svarte Stingray ble leid ut for 1 USD i året til astronautene Conrad, Gordon og Bean.",
+"Sjeldne valg: ZL1 (2 biler), J56 (115), L88 (116), L89 (390). Wikipedia nevner at en 1969 L88 Lightweight ble solgt for 2 860 000 USD i 2014 (dyreste C3), og at en av de to fabrikk-ZL1 ble solgt for 3 140 000 USD i 2023.",
+"Biler med AC: 11 859 (31 %). Produksjonstallet varierer mellom kildene: 38 762 hos Corvette Action Center mot 38 462 på Wikipedia."
+],
+1970:[
+"Produksjonen startet i januar 1970 (lansert februar, sammen med andre generasjon Camaro) med fenderflares, ny «egg-crate»-grill og tilsvarende luftespalter i skjermene, større firkantede blinklys foran og større rektangulære eksosutløp.",
+"Interiør: nye seter og et nytt deluxe-valg (custom interior) med trepaneler, bedre teppe, skinn på sitteflatene og teppebelagte nedre dørpaneler. Standard er Positraction, tonet glass og vid 4-trinns manuell.",
+"Motorer: base ZQ3 350 (300 hk), L46 (350 hk) og to nye. LT1 gir 370 hk @ 6000 og 380 lb-ft @ 4000, med 11:1, solide løftere, smidd stålveivaksel, firebolts hovedlagre, kam med høy løft, aluminiumsinntak og finnede aluminium ventildeksler. Under 8 % av produksjonen, ikke med AC, og med hevet panser og LT1-dekor. Motor Trend målte 14,36 s kvartmil @ 101,69 mph.",
+"LS5 454 gir 390 hk @ 4800 og 500 lb-ft @ 3400 og ble valgt på ca. en fjerdedel av bilene. LS7 454 (460 hk @ 5600, 490 lb-ft) sto i Chevrolet-litteraturen og ble tilbudt som boksmotor, men antas ikke solgt til sluttkunder.",
+"Girkasser: 3-trinns manuell droppes og 4-trinns manuell blir standard. Wikipedia sier at Turbo Hydra-Matic var gratis på alle motorer unntatt LT1. Andre kilder oppgir at L46 heller ikke fantes med automat.",
+"ZR1-pakke (ny): 1 221 USD, bare med LT1. Racing-understell, kraftige bremser, stabilisatorer og annet. Kan ikke kombineres med elektriske vinduer, servostyring, AC, bakrute-defogger, hjuldeksler eller radio.",
+"Sjeldne valg: ZR1 (25 biler), skulderbelter i cabriolet (475), LT1 (1 287). Alle hk-tall for 1968–70 er SAE brutto.",
+"Biler med AC: 6 659 (38 %). Produksjonen falt nesten 60 % på grunn av det korte modellåret."
+],
+1971:[
+"Nesten identisk med 1970, ute og inne. Fiberoptisk overvåkning, frontlyktspylere og M22 4-trinns er borte ifølge Wikipedia (Car and Driver testet likevel en LS6 med M22).",
+"AC bestilles nå på de fleste bilene, ca. 53 %.",
+"Lavere kompresjon for lavoktan blyfri bensin. Effekttapet var 30–40 hk, men med brutto-mot-netto-tall ser det ut som 90–105 hk lavere, avhengig av motor.",
+"Motorer (brutto / netto): base 350 270/210 hk, 360/300 lb-ft, 8,5:1. LT1 330/275 hk, 360/300 lb-ft, 9,0:1. LS5 365/285 hk, 465/390 lb-ft, 8,5:1. LS6 (bare 1971) 425/325 hk, 475/390 lb-ft, 9,0:1 med aluminiumshoder, kunne fås med automat og var høyest rangert i 1970–72.",
+"ZR1 videreføres for LT1. ZR2 (bare 1971) kostet 1 747 USD for LS6, inkluderte ZR1-utstyr og krevde 4-trinns manuell. Bare 12 biler fikk den (2 cabrioleter), av 188 LS6.",
+"Sjeldne valg: ZR1 (8), ZR2 (12), LS6 (188), skulderbelter i cabriolet (677).",
+"Biler med AC: 11 481 (53 %)."
+],
+1972:[
+"Siste år for krom støtfanger foran og bak, den vakuumstyrte viskerluken og den avtakbare bakruten på alle coupéer i 1968–72. Nøkkelstyrt tyverialarm blir standard.",
+"Automat sitter på de fleste biler for første gang, ca. 54 %.",
+"Effekt oppgis nå som SAE netto. Base 350: 200 hk @ 4400, 300 lb-ft @ 2800, 8,5:1.",
+"LT1: 255 hk @ 5600, 280 lb-ft @ 4000, 9,0:1. Siste år for LT1 og ZR1-pakken, og nå kan LT1 ha AC. LS5 454: 270 hk @ 4000, 390 lb-ft @ 3200, 8,5:1, ikke i California.",
+"M22 er ikke lenger vanlig produksjonsvalg, men monteres fortsatt på ZR1. Chevrolet begynte å begrense noen drivlinjer til California på grunn av strengere utslippskrav.",
+"Cabriolet solgte 6 508, ca. 9 % av markedet og nr. 3 i sin klasse (Cutlass Supreme 11 571, Impala 6 456, Mustang 6 401).",
+"Sjeldne valg: ZR1 (20), skulderbelter i cabriolet (749), LT1 (1 741).",
+"Biler med AC: 17 011 (63 %)."
+],
+1973:[
+"Ny lett 5 mph-støtfanger foran: et tverrgående innerrør på to Omark-bolter under et støpt urethan-trekk (+35 lb). Den kromede bakre støtfangeren videreføres.",
+"Radialdekk er standard (GR70-15, hvite striper eller hvite bokstaver valgfritt), karosseriet har gummifester og støyen i kupeen er redusert med 40 %.",
+"Fronten får grill i pressstøpt metall (svart med sølvkant), nye luftekanaler i skjermene, rundt nese-emblem og isolasjon under panseret. Nytt panser med luftinntak bak, som skal ha kuttet 0–60 med ca. ett sekund.",
+"Motorer: L48 190 hk @ 4400, 270 lb-ft @ 2800, 8,5:1. L82 (erstatter LT1) 250 hk @ 5200, 285 lb-ft @ 4000, 9,0:1, valgt på nesten 20 % til 299 USD. LS4 454 (erstatter LS5) 275 hk @ 4400, 395 lb-ft @ 2800, 8,25:1, valgt på 15 %. Noen kilder oppgir 270 hk for LS4.",
+"Z07 off-road-pakken introduseres (45 biler). Aluminiumsfelger satt på prøvebiler og noen få 1973-er, men ble holdt tilbake av kvalitetsgrunner til 1976.",
+"Biler med AC: 21 578 (71 %)."
+],
+1974:[
+"Ny bakre støtfanger: avsmalnende urethan-trekk med integrert skiltholder, utsparinger for runde baklys og en aluminiumsbjelke på to Omark-braketter (5 mph). Bare i 1974 har trekket en vertikal søm i midten.",
+"Alarmens nøkkelaktivator flyttes fra bakpanelet til venstre frontskjerm. Eksosrørene peker nedover uten forlengelse, dobbel eksos får resonatorer, og kjøler og skjerm er revidert for kjøling i lav fart. Det innvendige speilet er bredere (8 til 10 tommer). Hofte- og skulderbelte er integrert (bare coupé), grillen er aluminium og helt svart, og tanklokket har ikke emblem.",
+"FE7 Gymkhana-understell (stivere fjærer og stivere frontstabilisator) uten bestillingsbegrensninger. Z07-pakken (400 USD) inkluderer FE7 og kraftige servobremser, og fantes bare på L82 og LS4 med M21.",
+"Motorer: L48 195 hk @ 4400, 275 lb-ft @ 2800. L82 250 hk @ 5200, 285 lb-ft @ 4000. LS4 270 hk @ 4400 (ned fra 275), 380 lb-ft @ 2800, 8,25:1. Wikipedia oppgir 0–60 på 6,8 s for L48.",
+"Siste år for ekte dobbel eksos (for biler uten katalysator) og for big block."
+],
+1975:[
+"Første år med katalysator og elektronisk tenning. Drivstoffmåler og tanklokk er merket «unleaded fuel only». Dobbel eksos slås sammen til én katalysator og deles igjen til to lyddempere og endestykker.",
+"Elektronisk tachometer, og speedometeret får km/h-subskala. Reviderte indre støtfangersystemer med støpte støtfangerhorn, ett-delt sømløst urethan-trekk bak, svartlakkerte støtfangerlister og helt svart plastgrill. Ravgule parkeringslys erstatter klare.",
+"Cross-flag-emblemer introduseres, og Astro Ventilation avvikles. Serviceintervallene er forlenget, og bilen ble markedsført som «en mer effektiv Corvette».",
+"Motorer: L48 165 hk @ 3800 (lavest for noen V8-Corvette), 255 lb-ft @ 2400, 8,5:1. L82 205 hk @ 4800 (ned 45 hk), 255 lb-ft @ 3600, 9,0:1. L82-emblem på panseret fordi det ikke finnes noen større motor. Akselutvekslingene er uendret: 3,08 (automat) og 3,36 (manuell). Siste år for L82 i California-biler.",
+"Siste cabriolet frem til 1986 (12 % av bilene). Kalesje er standard, og hardtop i karosserifarge eller vinyl er valgfritt. Car and Driver målte 7,7 s 0–60 på en base med automat."
+],
+1976:[
+"Stålgulv erstatter fiberglass. Det skjermer katalysatoren, er lettere og gir mindre støy i kupeen. Cowl-induction er droppet: luftrenseren henter uteluft fra fronten gjennom kanaler over kjøleren, og luftespalten i panseret er uten funksjon.",
+"Støpte aluminiumsfelger er endelig tilgjengelige og reduserer uavfjæret vekt med 32 lb. Ca. 15 % bestilte dem (299 USD).",
+"Siste år for dekk med hvite striper (86 % hadde hvite bokstaver). Ett-delt «Corvette»-navneskilt bak erstatter enkeltbokstavene. Siste år for «Stingray»-navnet på skjermene.",
+"Nytt «Vega GT» firekjefta ratt (upopulært, men gir mer plass), vedlikeholdsfritt «Freedom»-batteri i alle biler og bakrute-defogger som varmeelement i glasset («Electro-Clear»).",
+"Motorer: L48 180 hk @ 4000 (opp fra 165), 270 lb-ft @ 2400. L82 210 hk @ 5200, 255 lb-ft @ 3600. Car and Driver målte 6,8 s 0–60 for både L48 og L82 med 4-trinns."
+],
+1977:[
+"Rattstammen er flyttet 2 tommer nærmere dashbordet. Custom interior med skinn er standard, og tekstil og skinn fås uten tillegg. Ny konsoll tar universelle Delco-radioer (8-track mulig), hjelpeinstrumentene er restylet og voltmeter erstatter amperemeter. Soldeksler kan svinges til siden.",
+"Nytt treekers skinnratt er standard med tilt-teleskop-stamme. Servostyring og servobremser er standard.",
+"Nytt ekstrautstyr: lakkerte sportsspeil, cruisekontroll (bare automat) og en convenience-pakke (forsinket kupélys, frontlys-varsler, lys under panseret, varsellys for lite drivstoff, courtesy-lys og speil i passasjerens solskjerm).",
+"Sort lakk er tilbake (sist i 1969). Motorlakken skiftet fra Chevy orange til Corporate blue tidlig i produksjonen. Stingray-skriften er droppet, og nye cross-flag-emblemer sitter på skjermene. Frontrutestolpene er lakkert svarte.",
+"Siste år for sugar-scoop-taklinjen og den vertikale bakruten.",
+"Effekt uendret: base 180 hk, L82 210 hk. Corvette-produksjonen passerte en halv million siden 1953."
+],
+1978:[
+"Silver Anniversary (25 år): jubileumsemblemer på nese og tanklokk. B2Z-pakken (399 USD) ga tofarget lakk, sølv over grå underdel med pinstripe, og krevde aluminiumsfelger og to sportsspeil (+380 USD).",
+"Indy 500 Pace Car-replika (Z78): 6 502 bygget, svart over sølv med rød pinstripe, for- og bakspoiler, speiltonede takpaneler og profilerte sportsseter med sølvfarget skinn.",
+"Ny fastback-bakrute i fast glass erstatter sugar-scoop-bakruten. Det gir mer bagasjeplass og bedre sikt, og følger med en solskjerm.",
+"Interiør i «flycockpit»-stil med ny instrumentpanel og konsoll samt nye dørpaneler. Hanskerom erstatter kartlommene på passasjersiden.",
+"Nytt ekstrautstyr: sentrallås, elektrisk antenne, to bakhøyttalere og CB-radio. Convenience-gruppen inkluderer intervallviskere, gulvmatter og belyst vanity-speil.",
+"Motorer: L48 185 hk (175 i California og i høyden). L82 220 hk, med dual-snorkel luftinntak og et aluminiumsinntak som sparer 24 lb. Kromskjermen over tenningen er erstattet av en metallforet svart plastdeksel.",
+"Dekk: metriske P225/70R15 er standard, og bredere P255/60R15 er valgfritt (krever at skjermene beskjæres). Drivstofftanken vokser fra 17 til 24 gal, og reservehjulet blir et lite P195/80D15 nødhjul.",
+"Ytelse: L48 med automat 0–60 på 7,8 s og 123 mph topphastighet. Road & Track-testen av L82 oppgis med 6,6 s, 127 mph og 15,3 s @ 95 mph på kvartmil."
+],
+1979:[
+"Rekordår med 53 807 bygget, fortsatt rekord. Cross-flag på nese og tanklokk er tilbake til 1977-designen.",
+"Nye lette høyrygg-seter er standard, med bedre sidestøtte, lettere adkomst til bagasjen og ca. 24 lb lavere vekt for paret.",
+"Spoilere (valgfritt, nesten 7 000 biler) kutter luftmotstanden med ca. 15 % og forbedrer forbruket med ca. en halv mile per gallon. Glass-T-tops i speiltonet glass (365 USD) ble valgt på nesten 15 000 biler, og alle T-tops er nå koblet til alarmen.",
+"Standard: halogen-fjernlys og AM/FM-radio. Kassettspiller kostet 234 USD. Kraftige støtdempere kan bestilles uten full Gymkhana, og L82 med AC får en ekstra elektrisk vifte. Dørterskler og bakrutelist er lakkert svarte.",
+"Motorer: nye «open flow»-lyddempere løfter effekten på alle motorer, til 195 hk for L48 og 225 hk for L82. Moment: L48 280 lb-ft @ 2400 (8,2:1) og L82 270 lb-ft @ 3600 (8,9:1).",
+"L82 kan bestilles med manuell for siste gang, og M21 tett 4-trinns avsluttes. En vid 4-trinns er tilgjengelig på alle. Under 20 % av bilene hadde manuell, mot ca. 82 % i 1968."
+],
+1980:[
+"Restylte støtfangertrekk foran og bak med integrerte spoilere, som gir lavere luftmotstand og mer luft til kjøleren. Nytt panser. Cross-flags på frontskjermene er fjernet, og flaggene på nese og tanklokk er gjort mer langstrakte. L82-emblemet flyttes fra panseret til frontskjermene.",
+"L82 avsluttes (230 hk) og kan ikke lenger kombineres med manuell, fordi manuell bare fantes med L48. Speedometeret viser maks 85 mph (føderalt krav).",
+"Standard: AC, tilt-teleskop-rattstamme, elektriske vinduer, sportsspeil og convenience-pakke. Nytt valg: takpanelbærer som monteres på bakdekket.",
+"Vektreduksjon: tynnere karosseripaneler, en aluminiums Dana 44 IRS-differensial med krysspanel i stedet for den støpejerns 10-bolts, og aluminiumsinntak og aluminiums generatorbrakett på alle biler.",
+"California 305 (LG4): 180 hk, rustfrie 409-eksosgrenrør, bare automat og datastyrt forgasser og tenning. Kunder fikk 50 USD i kreditt, men betalte 250 USD for utslippssertifisering. Utenfor California: L48 190 hk, 280 lb-ft @ 2400, 8,2:1.",
+"Prisen er oppgitt ulikt i kilden: 13 140 USD i tabellen, mens teksten sier at den steg fire ganger i løpet av året til 14 345 USD."
+],
+1981:[
+"Én motor: L81 350 (190 hk), godkjent i alle stater med manuell eller automat. Krom luftrenserlokk og støpte magnesium ventildeksler på alle motorer.",
+"Fra 305-en blir de lette rustfrie 4-i-1-eksosgrenrørene og det datastyrte systemet standard. En ekstra elektrisk kjølevifte er standard.",
+"Siste C3 med manuell girkasse. Publisert 0–60 er 8,1 s.",
+"Komposittbladfjær bak (Corvette leaf spring) debuterer, sparer 36 lb og fantes bare på base-understell med automat.",
+"Valgfri Delco ETR-radio med digital klokke erstatter den analoge klokken i instrumentpanelet med et oljetemperaturinstrument. Aluminiumsfelger, valgfrie siden 1976, sitter nå på 90 % av bilene (428 USD hver). Nytt: elektrisk justerbart førersete og elektriske sidespeil. Flere tofargers lakker.",
+"Produksjonen flyttes fra St. Louis til det nye anlegget i Bowling Green, Kentucky, midt i 1981.",
+"Moment: 280 lb-ft @ 1600, 8,2:1."
+],
+1982:[
+"Cross-Fire Injection debuterer: gasspjeldhus-innsprøytning med to gasspjeldhus styrt av datamaskin. L83 gir 200 hk, 285 lb-ft @ 2800 og 9,0:1.",
+"Ny 4-trinns automat, 700-R4, erstatter den 3-trinns Turbo-Hydramatic. Den har lavere 1. og 2. gir, og 4. gir er en overdrive som kutter turtallet med ca. 30 % på motorvei. Wikipedia skriver at den viste seg problematisk. Den var eneste girkasse dette året.",
+"Publisert ytelse: 0–60 på 7,9 s og kvartmil på 16,1 s @ 85 mph. 8-track avsluttes. «Cross-fire injection»-emblem sitter på frontskjermene, og flaggene på nese og tanklokk får et firkantet design.",
+"Collector Edition: egen serienummerrekke, sølvbeige lakk, aluminiumsfelger formet som 1967-modellens skruefelger og en åpningsbar bakrute (første Corvette med det). VIN har «0» som sjette siffer (standardbiler har «8»). 6 759 bygget, og grunnprisen på 22 537,59 USD gjorde den til den første Corvette over 20 000 USD.",
+"Produksjon 25 407 totalt, hvorav Collector Edition utgjør ca. en fjerdedel."
+]
+};
+const PRICE={1968:"4 663 USD",1969:"4 780 USD",1970:"5 192 USD",1971:"5 496 USD",1972:"5 533 USD",1973:"5 561 USD",1974:"6 001 USD",1975:"6 810 USD",1976:"7 604 USD",1977:"8 647 USD",1978:"9 750 USD",1979:"10 220 USD",1980:"13 140 USD (tabell)",1981:"16 258 USD",1982:"18 290 USD"};
+Y.forEach(d=>{d.chg=CHG[d.y];});
+
+/* 0–60: t = M (manuell), A (automat), ? (ikke oppgitt). c = b (kilde bekreftet) / m (sekundærkilde) */
+const T=[
+{y:1968,e:"327 base",hp:"300 B",t:"M",s:8.6,q:"–",src:"Samleside (CorvSport, test ikke navngitt)",c:"m",n:"Oppført i 4-trinnskolonnen."},
+{y:1968,e:"327 L79",hp:"350 B",t:"M",s:7.1,q:"15,0",src:"Car and Driver",c:"b",n:"L79 fantes aldri med automat, så testen er manuell."},
+{y:1968,e:"427 L68",hp:"400 B",t:"?",s:5.7,q:"14,1 @ 102",src:"Car and Driver",c:"b",n:"Girtype ikke oppgitt i kilden. En annen oversikt oppgir 6,1 s for L68."},
+{y:1968,e:"427 L71",hp:"435 B",t:"?",s:6.5,q:"13,4 @ 109,5",src:"Car Life",c:"m",n:"Girtype ikke oppgitt. En annen oversikt oppgir 6,3 s i 4-trinnskolonnen."},
+{y:1969,e:"427 L71",hp:"435 B",t:"?",s:6.1,q:"trap 98 mph",src:"Road & Track",c:"b",n:"Girtype ikke oppgitt i gjengivelsen. Samme test nevner egne tider for 4-trinns L71 og L89 automat."},
+{y:1969,e:"427 L71",hp:"435 B",t:"M",s:5.3,q:"13,8 @ 106,8",src:"Car and Driver, sept 1969",c:"b",n:"3,70-aksel. Dårlige dekk."},
+{y:1969,e:"427 L71",hp:"435 B",t:"A",s:6.6,q:"14,58 @ 98,6",src:"Car Life",c:"b",n:"3-trinns automat, 3,70-aksel. Noen kilder oppgir 4-trinns."},
+{y:1969,e:"350 base",hp:"300 B",t:"A",s:8.4,q:"–",src:"Road & Track",c:"b",n:"Base-motor med 3-trinns automat."},
+{y:1970,e:"350 LT-1",hp:"370 B",t:"M",s:5.7,q:"14,17 @ 102,2",src:"Standard Guide to American Muscle Cars",c:"m",n:"Original test ikke navngitt. Andre tester: 14,5 @ 99,5 (C&D), 14,36 @ 101,7 (MT)."},
+{y:1970,e:"454 LS5",hp:"390 B",t:"A",s:7.0,q:"15,0",src:"Road & Track",c:"m",n:"Via samleside."},
+{y:1971,e:"350 base",hp:"270 B",t:"A",s:7.1,q:"15,55 @ 90,4",src:"Car and Driver, juni 1971",c:"b",n:"3,08-aksel."},
+{y:1971,e:"350 LT-1",hp:"330 B",t:"M",s:6.0,q:"14,57 @ 100,6",src:"Car and Driver, juni 1971",c:"b",n:"M21, 3,70-aksel."},
+{y:1971,e:"454 LS5",hp:"365 B",t:"A",s:5.7,q:"14,20 @ 100,3",src:"Car and Driver, juni 1971",c:"b",n:"3,08-aksel."},
+{y:1971,e:"454 LS6",hp:"425 B",t:"M",s:5.3,q:"13,80 @ 104,7",src:"Car and Driver, juni 1971",c:"b",n:"M22, 3,36-aksel. Topphastighet 152 mph."},
+{y:1973,e:"454 LS4",hp:"275 N",t:"M",s:6.4,q:"–",src:"Car and Driver, des 1972",c:"b",n:"3,55-aksel. Girtype fra en samleside (M20)."},
+{y:1973,e:"350 L82",hp:"250 N",t:"M",s:7.2,q:"15,5",src:"Road & Track, juni 1973 (via Old Car Memories)",c:"m",n:"4-trinns. Aksel ikke oppgitt. Enkeltkilde, ikke sjekket mot originaltesten."},
+{y:1973,e:"350 L82",hp:"250 N",t:"M",s:6.6,q:"14,9",src:"Samleside (test ikke navngitt)",c:"m",n:"Mye raskere enn Road & Track-tallet over, og uten navngitt test. Bruk med forsiktighet."},
+{y:1974,e:"350 L82 (cabriolet)",hp:"250 N",t:"M",s:7.4,q:"15,8 @ 92,5",src:"Road & Track, feb 1974",c:"b",n:"Kilder oppgir både 1973 og 1974."},
+{y:1974,e:"350 L48",hp:"195 N",t:"?",s:6.8,q:"–",src:"Wikipedia (original test ikke oppgitt)",c:"m",n:"Girtype ikke oppgitt."},
+{y:1975,e:"350 L48",hp:"165 N",t:"A",s:7.7,q:"16,1",src:"Car and Driver (via Wikipedia)",c:"m",n:"Base med automat."},
+{y:1976,e:"350 L48",hp:"180 N",t:"M",s:6.8,q:"–",src:"Car and Driver (via Wikipedia)",c:"m",n:"4-trinns."},
+{y:1976,e:"350 L82",hp:"210 N",t:"M",s:6.8,q:"–",src:"Car and Driver (via Wikipedia)",c:"m",n:"4-trinns. Samme tid som L48 ifølge kilden."},
+{y:1976,e:"350 L82",hp:"210 N",t:"A",s:7.1,q:"15,3",src:"Car and Driver (via samleside)",c:"m",n:"Road Test-magasinet (juni 1976) målte 15,2 @ 92,4 på kvartmil."},
+{y:1977,e:"350 L82",hp:"210 N",t:"M",s:6.8,q:"15,5 @ 92,5",src:"Road & Track, juni 1977",c:"b",n:""},
+{y:1978,e:"350 L82",hp:"220 N",t:"M",s:6.5,q:"15,2 @ 95",src:"Road & Track, april 1978",c:"b",n:"3,70-aksel."},
+{y:1978,e:"350 L48",hp:"185 N",t:"A",s:7.8,q:"16,1",src:"Samleside (test ikke navngitt)",c:"m",n:""},
+{y:1979,e:"350 L82",hp:"225 N",t:"M",s:6.6,q:"15,3 @ 95",src:"Road & Track, des 1978 / april 1979",c:"b",n:"Topp 127 mph. Et forum oppgir automat for samme test."},
+{y:1980,e:"350 L82",hp:"230 N",t:"A",s:7.4,q:"15,4",src:"Samleside (test ikke navngitt)",c:"m",n:"L82 var kun med automat i 1980."},
+{y:1981,e:"350 L81",hp:"190 N",t:"M",s:8.1,q:"ca. 16,0",src:"Samleside (test ikke navngitt)",c:"m",n:"4-trinns."},
+{y:1982,e:"350 L83",hp:"200 N",t:"A",s:7.9,q:"16,1 @ 85",src:"Road & Track",c:"m",n:"Via samleside."},
+{y:1982,e:"350 L83",hp:"200 N",t:"A",s:8.1,q:"15,9 @ 86",src:"Samleside",c:"m",n:"Annen test enn over."}
+];
+
+/* Moment i lb-ft @ o/min: [tekst, merknad]. Kilder: CorvSport spesifikasjonssider og Corvette Action Center. */
+const TQ={
+"1968|L30 (base)":["360 @ 3400","En kilde oppgir 3200 o/min."],
+"1968|L79":["360 @ 3600"],
+"1968|L36":["460 @ 3600"],
+"1968|L68":["460 @ 3600","En kilde oppgir 400, trolig en tastefeil."],
+"1968|L71":["460 @ 4000"],
+"1968|L89":["ikke oppgitt separat","L71 har 460 @ 4000."],
+"1968|L88":["485 @ 4000"],
+"1969|Base":["380 @ 3200"],
+"1969|L46":["380 @ 3600"],
+"1969|L36":["460 @ 3600"],
+"1969|L68":["460 @ 3600"],
+"1969|L71":["460 @ 4000"],
+"1969|L89":["ikke oppgitt separat","L71 har 460 @ 4000."],
+"1969|L88":["460 @ 4000","Bare én kilde. 1968 L88 oppgis til 485."],
+"1969|ZL1":["ikke funnet"],
+"1970|Base":["380 @ 3200"],
+"1970|L46":["380 @ 3600"],
+"1970|LT-1":["380 @ 4000"],
+"1970|LS5":["500 @ 3400"],
+"1971|Base":["360 @ 3200"],
+"1971|LT-1":["360 @ 4000"],
+"1971|LS5":["500 @ 3400","Brutto. Wikipedia og to andre kilder oppgir 465 @ 3200."],
+"1971|LS6":["475 @ 4000"],
+"1972|Base":["300 @ 2800"],
+"1972|LT-1":["280 @ 4000"],
+"1972|LS5":["390 @ 3200"],
+"1973|L48":["270 @ 2800"],
+"1973|L82":["285 @ 4000"],
+"1973|LS4":["395 @ 2800"],
+"1974|L48":["275 @ 2800"],
+"1974|L82":["285 @ 4000"],
+"1974|LS4":["380 @ 2800"],
+"1975|L48":["255 @ 2400"],
+"1975|L82":["255 @ 3600"],
+"1976|L48":["270 @ 2400"],
+"1976|L82":["255 @ 3600"],
+"1977|L48":["270 @ 2400"],
+"1977|L82":["255 @ 3600"],
+"1978|L48":["280 @ 2400"],
+"1978|L82":["260 @ 3600"],
+"1979|L48":["280 @ 2400","Fra Wikipedia."],
+"1979|L82":["270 @ 3600","Fra Wikipedia. Andre år oppgis 260."],
+"1980|L48":["280 @ 2400","Corvette Action Center oppgir 270."],
+"1980|L82":["260 @ 3600"],
+"1980|LG4":["255 @ 2000"],
+"1981|L81":["280 @ 1600","o/min virker lavt, men oppgis slik i to kilder."],
+"1982|L83":["285 @ 2800"]
+};
+const tqtxt=(y,c)=>{const t=TQ[y+"|"+c];return t?t[0]+" lb-ft":"ikke funnet";};
+const NET71={Base:[[210,4400],[300,2800]],"LT-1":[[275,5600],[300,4000]],LS5:[[285,4000],[390,3200]],LS6:[[325,5600],[390,3600]]};
+const netHp=(y,c)=>y===1971&&NET71[c]?`<span class="sub"><b>${NET71[c][0][0]}</b> netto @ ${NET71[c][0][1]}</span>`:"";
+const netTq=(y,c)=>y===1971&&NET71[c]?`<span class="sub"><b>${NET71[c][1][0]} @ ${NET71[c][1][1]}</b> netto</span>`:"";
+const tq=(y,c)=>{const t=TQ[y+"|"+c];return t?`${esc(t[0])}${t[1]?`<span class="sub">${esc(t[1])}</span>`:""}`:`<span class="sub">ikke funnet</span>`;};
+/* Automatkasse per år (Corvette Action Center) */
+const AUTOBOX={
+1968:"Turbo Hydra-Matic (3-trinns, M40). Den erstattet Powerglide dette året.",
+1969:"Turbo Hydra-Matic (3-trinns).",1970:"Turbo Hydra-Matic (3-trinns).",1971:"Turbo Hydra-Matic (3-trinns).",1972:"Turbo Hydra-Matic (3-trinns).",
+1973:"Turbo Hydra-Matic (3-trinns).",1974:"Turbo Hydra-Matic (3-trinns).",
+1975:"Turbo Hydra-Matic 400.",
+1976:"L48: Turbo Hydra-Matic 350. L82: Turbo Hydra-Matic 400.",1977:"L48: Turbo Hydra-Matic 350. L82: Turbo Hydra-Matic 400.",
+1978:"Turbo Hydra-Matic 350.",1979:"Turbo Hydra-Matic 350.",1980:"Turbo Hydra-Matic 350.",1981:"Turbo Hydra-Matic 350.",
+1982:"Turbo Hydra-Matic 700-R4 (4-trinns med overdrive)."
+};
+const SRC=[
+["Corvette Action Center – 1969 Identification Numbers (VIN-format)","https://corvetteactioncenter.com/specs/c3/1969/69id.html"],
+["NCRS-forum – 70 Corvette Matching Numbers","https://www.forums.ncrs.org/forum/technical-discussion-archives/50135-70-corvette-matching-numbers?p=526680"],
+["CorvSport – 1970 Corvette Specifications (motorsuffiks, akselkoder)","https://www.corvsport.com/1970-corvette-specifications/"],
+["Corvette Action Center – motor- og girkombinasjoner 1968–82","https://corvetteactioncenter.com/specs/c3/c3power.html"],
+["CorvSport – spesifikasjonssider per år (moment)","https://www.corvsport.com/1971-corvette-specifications/"],
+["Hagerty – 1968–82 C3 buyers guide","https://www.hagerty.com/media/buying-and-selling/1968-82-chevrolet-corvette-buyers-guide/"],
+["CorvSport – C3 buyer's guide og motoroversikt","https://www.corvsport.com/c3-corvette-buyers-guide/"],
+["CorvSport – 1968, 1970, 1971, 1974, 1979 spesifikasjoner","https://www.corvsport.com/1968-c3-corvette/"],
+["Corvette Story – 1968 og 1970 specs","https://corvettestory.com/specs/1970-Corvette-specs-options.php"],
+["Corvette Action Center – produksjonstall","https://www.corvetteactioncenter.com/specs/c3/1970/70prod.html"],
+["Wikipedia – Chevrolet Corvette (C3)","https://en.wikipedia.org/wiki/Chevrolet_Corvette_(C3)"],
+["Wikipedia – Chevrolet LT-1","https://en.wikipedia.org/wiki/Chevrolet_LT-1"],
+["CorvetteForum – tach-rødmerking","https://www.corvetteforum.com/forums/c3-tech-performance/260590-68-73-which-factory-tach-redlines-match-which-engines.html"],
+["CorvetteParts.com – C3 tachometre","https://corvetteparts.com/catalog/interior?yr=C3&itm=Tachometer"],
+["Curbside Classic – R&T og C&D 1969-tester","https://www.curbsideclassic.com/vintage-reviews/vintage-cd-road-test-1969-corvette-435-427-coupe-its-excellent-engineering-tends-to-be-obscured-by-some-rather-garish-styling-gimmicks/"],
+["FastestLaps – C3-tester (LT-1, LS6, L82, LS4)","https://fastestlaps.com/models/chevrolet-corvette-c3-lt-1"],
+["Old Car Memories – L82 og 1980–82","https://oldcarmemories.com/1980-1982-chevrolet-corvette-end-era/"],
+["Corvette Report – Motor Trend 1978","https://corvettereport.com/motor-trends-1978-corvette-test-why-it-was-a-sensation/"]
+];
+
+const PITFALLS=[
+"Nettsider som oppgir «1970 Stingray 427, 0–60 på 5,3 s» har mest sannsynlig feilmerket 1969-testen til Car and Driver. Det fantes ingen 427 i 1970.",
+"En gammel spesifikasjonsside lister LT-1 for 1969. LT-1 kom først i 1970, så tabellen kan ikke stoles på.",
+"Samlesider blander inn eksperimentelle og modifiserte biler (f.eks. 2,8 s for en «1968-prototype» og 3,6 s for en turbinbil fra 1978). Disse er ikke produksjonsbiler og er utelatt her.",
+"En FastestLaps-side merket LS5 inneholdt LS6-tallene (5,3 s). Kontroller alltid hvilken motor et tall gjelder.",
+"Hk-tall 1968–71 er SAE brutto; fra 1972 netto. Fallet fra 1971 til 1972 skyldes delvis målemetoden, ikke bare svakere motorer.",
+"Rødmerking for tachometer er hentet fra forumsinnlegg og delekataloger. For 1978–79 L82 er kildene uenige (5500, 5600 og 6000)."
+];
+
+const COMMON=[
+"Stålburet (windshield-stolper, rundt T-topp, bak hjulhus) og rammen rustner. Dette er viktigste enkeltpunkt for en C3.",
+"Fiberglassen: se etter sprekker, tidligere reparasjoner, dårlig pasning og omlakkering.",
+"Numbers matching: VIN på ramme, motorstempling, blokkdato og girkasse bør henge sammen. Bruk dokumentasjon, ikke bare selgerens ord.",
+"Frontlykter (vakuum) og lekkasjer rundt T-topp og bakvindu.",
+"Bak: differensial, drivlinje og bladfjær. Gummifester og bakre bøssinger."
+];
+
+/* ---------- UTIL ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const li=a=>`<ul class="l">${a.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
+const fmt=v=>String(v).replace(".",",");
+const tcls=t=>t==="M"?"man":t==="A"?"aut":"unk";
+const tlab=t=>t==="M"?"Manuell":t==="A"?"Automat":"Gir ikke oppgitt";
+const pill=t=>`<span class="pill ${tcls(t)}">${tlab(t)}</span>`;
+function tach(v,alt){
+  if(!v) return `<span class="sub">ikke verifisert</span>`;
+  const a=alt?`<span class="sub">${alt.v} ${esc(alt.l)}</span>`:"";
+  return `<span class="rpm">${v}</span><span class="tach" style="--p:${(v/7000*100).toFixed(1)}%" title="Rødmerking starter på ${v} o/min"></span>${a}`;
+}
+
+/* ---------- VIEWS ---------- */
+const state={view:"aar",year:1970,q:"",mode:"aar",tfilter:"alle",msub:"plan",tsub:"sjekk"};
+
+const HLC={L79:"sb",L46:"sb",L36:"bb",L68:"bb",LS5:"bb",LS4:"bb"};
+const hlOf=(y,c)=>c==="L82"?(y===1973?"82":""):(HLC[c]||"");
+const hlCls=(y,c)=>{const k=hlOf(y,c);return k?` class="hl-${k}"`:""};
+const HLKEY=`<div class="hlkey" aria-label="Fargeforklaring"><span class="hl-sb"><i></i>Småblokk L79 og L46</span><span class="hl-82"><i></i>1973 L82</span><span class="hl-bb"><i></i>Big block L36, L68, LS5 og LS4</span></div>`;
+function viewYear(){
+  const i=Y.findIndex(d=>d.y===state.year), d=Y[i], p=Y[i-1];
+  const tests=T.filter(x=>x.y===d.y);
+  const chips=Y.map(x=>`<button data-year="${x.y}" aria-pressed="${x.y===d.y}"><b>${String(x.y).slice(2)}</b><small>${x.y}</small><span class="dots">${[...new Set(x.rows.map(r=>hlOf(x.y,r.c)).filter(Boolean))].map(k=>`<i class="hl-${k}"></i>`).join("")}</span></button>`).join("");
+  const rows=d.rows.map(r=>`<tr${hlCls(d.y,r.c)}>
+    <td><span class="code">${esc(r.c)}</span><span class="sub">${esc(r.n)}</span></td>
+    <td class="num">${esc(r.hp)}<span class="sub">${r.r==="B"?"SAE brutto":"SAE netto"}</span>${netHp(d.y,r.c)}</td>
+    <td class="num">${tq(d.y,r.c)}${netTq(d.y,r.c)}</td>
+    <td>${tach(r.t,r.ta)}</td>
+    <td>${esc(r.tr)}</td>
+    <td>${esc(r.ac)}</td>
+    <td>${esc(r.no)}</td></tr>`).join("");
+  const testTbl=tests.length?`<div class="scroll"><table><thead><tr><th>Motor</th><th>Gir</th><th class="num">0–60 mph</th><th class="num">¼ mile (s @ mph)</th><th>Kilde</th><th>Merknad</th></tr></thead><tbody>${
+    tests.map(x=>`<tr><td><span class="code">${esc(x.e)}</span><span class="sub">${esc(x.hp)} hk</span></td><td>${pill(x.t)}</td><td class="num">${fmt(x.s.toFixed(1))} s</td><td class="num">${esc(x.q)}</td><td>${esc(x.src)}${x.c==="m"?'<span class="sub">sekundærkilde</span>':""}</td><td>${esc(x.n)}</td></tr>`).join("")
+  }</tbody></table></div>`:`<div class="empty">Ingen bekreftet 0–60-test funnet for ${d.y}. Tallet er utelatt i stedet for å gjettes.</div>`;
+  return `
+  <div class="years" role="group" aria-label="Velg årsmodell">${chips}</div>${HLKEY}
+  <div class="yhead"><div><h2>${d.y}</h2><div class="nm">${esc(d.nm)}</div></div>
+    <div class="meta">Produksjon ${d.prod}${d.pc}${PRICE[d.y]?`<br>Grunnpris ${PRICE[d.y]}`:""}${d.ac?`<br>Med AC (C60): ${d.ac.toLocaleString("nb-NO")} (${Math.round(d.ac/+d.prod.replace(/\s/g,"")*100)} %)`:""}</div></div>
+  <p class="lead">${esc(d.sum)}</p>
+  <div class="pn"><button data-go="-1" ${i===0?"disabled":""}>← ${i?Y[i-1].y:""}</button><button data-go="1" ${i===Y.length-1?"disabled":""}>${i<Y.length-1?Y[i+1].y:""} →</button></div>
+
+  <section class="blk"><h3>${p?`Endringer fra ${p.y}`:"Nytt for C3"}</h3>${li(d.chg)}<p class="small" style="margin-top:8px">Kilde: Wikipedia (Chevrolet Corvette C3), supplert med øvrige kilder. AC-tall kommer fra Corvette Action Center.</p></section>
+
+  <section class="blk"><h3>Motorer og utstyr <small>Rødmerking: stripen viser hvor det røde feltet på tachometeret starter (skala 0–7000)</small></h3>
+    <div class="scroll"><table><thead><tr><th>Motor</th><th class="num">Hk</th><th class="num">Moment (lb-ft @ o/min)</th><th>Tach rødmerking</th><th>Gir</th><th>AC</th><th>Merknad</th></tr></thead><tbody>${rows}</tbody></table></div>${d.y===1971?`<p class="small" style="margin-top:8px">1971 ble oppgitt både brutto (SAE gross) og netto. Nettotallene er fra Wikipedias motortabell for C3 og ikke bekreftet mot GM-brosjyren, bortsett fra LT-1 på 275 hk netto, som et forumsinnlegg også henviser til fra en 1971-brosjyre.</p>`:""}${AUTOBOX[d.y]?`<p class="small" style="margin-top:8px">Automatkasse: ${esc(AUTOBOX[d.y])}</p>`:""}</section>
+
+  <section class="blk"><h3>0–60 mph <small>Bare tester der kilden er funnet</small></h3>${testTbl}</section>
+
+  <section class="blk"><h3>Kjøpsguide ${d.y}</h3>
+    <div class="three">
+      <div><h4>Typisk å finne</h4>${li(d.buy.find)}</div>
+      <div><h4>Sjekk ved kjøp</h4>${li(d.buy.check)}</div>
+      <div><h4>Deler og tilgjengelighet</h4>${li(d.buy.parts)}</div>
+    </div>
+    <div class="note"><b>Erfaringsbasert</b><br>Kjøpsråd er generelle observasjoner om C3, ikke fra et enkelt autoritativt dokument. Punkter merket * er ikke slått opp i kildene.</div>
+  </section>
+
+  <section class="blk"><h3>Gjelder alle årganger</h3>${li(COMMON)}</section>`;
+}
+
+function allRows(){
+  const out=[];
+  Y.forEach(d=>d.rows.forEach(r=>out.push({y:d.y,...r})));
+  return out;
+}
+
+function viewEngines(){
+  const q=state.q.trim().toLowerCase();
+  let rows=allRows().filter(r=>!q||[r.y,r.c,r.n,r.hp,r.tr,r.no].join(" ").toLowerCase().includes(q));
+  let body="";
+  if(state.mode==="aar"){
+    body=`<div class="scroll"><table><thead><tr><th>År</th><th>Motor</th><th class="num">Hk</th><th class="num">Moment (lb-ft @ o/min)</th><th>Tach rødmerking</th><th>Gir</th><th>AC</th><th>Merknad</th></tr></thead><tbody>${
+      rows.map(r=>`<tr${hlCls(r.y,r.c)}><td class="num">${r.y}</td><td><span class="code">${esc(r.c)}</span><span class="sub">${esc(r.n)}</span></td><td class="num">${esc(r.hp)}<span class="sub">${r.r==="B"?"brutto":"netto"}</span>${netHp(r.y,r.c)}</td><td class="num">${tq(r.y,r.c)}${netTq(r.y,r.c)}</td><td>${tach(r.t,r.ta)}</td><td>${esc(r.tr)}</td><td>${esc(r.ac)}</td><td>${esc(r.no)}</td></tr>`).join("")
+    }</tbody></table></div>`;
+  } else {
+    const g={};
+    rows.forEach(r=>{(g[r.c]=g[r.c]||[]).push(r)});
+    body=`<div class="scroll"><table><thead><tr><th>Motorkode</th><th>Cid</th><th>År og hk</th></tr></thead><tbody>${
+      Object.keys(g).map(k=>`<tr${HLC[k]?` class="hl-${HLC[k]}"`:""}><td><span class="code">${esc(k)}</span></td><td>${esc(g[k][0].n)}</td><td>${g[k].map(r=>`<span class="rpm"${k==="L82"&&r.y===1973?' style="background:color-mix(in srgb,var(--hl-82) 25%,transparent);padding:0 4px"':""}>${r.y}: ${esc(r.hp)} hk${r.y===1971&&NET71[r.c]?" brutto / "+NET71[r.c][0][0]+" netto":""}, ${esc(tqtxt(r.y,r.c))}${r.y===1971&&NET71[r.c]?" brutto / "+NET71[r.c][1][0]+" lb-ft netto":""}</span>`).join("<br>")}</td></tr>`).join("")
+    }</tbody></table></div>`;
+  }
+  return `
+  <section class="blk"><h3>Alle motorer <small>${rows.length} rader</small></h3>${HLKEY}
+  <div class="ctl"><input type="search" id="q" placeholder="Søk: L82, 454, automat, 1973…" value="${esc(state.q)}" aria-label="Søk i motorer">
+    <div class="seg"><button data-mode="aar" aria-pressed="${state.mode==="aar"}">Per år</button><button data-mode="kode" aria-pressed="${state.mode==="kode"}">Per motorkode</button></div></div>
+  ${body}
+  <div class="note"><b>Hk-tall</b><br>1968–71 er SAE brutto, fra 1972 SAE netto. Tallene kan ikke sammenlignes direkte mellom disse periodene. Moment er trolig oppgitt brutto til og med 1971 og netto fra 1972, men kildene sier det ikke eksplisitt.</div></section>`;
+}
+
+function viewTimes(){
+  let t=T.slice();
+  if(state.tfilter==="M") t=t.filter(x=>x.t==="M");
+  if(state.tfilter==="A") t=t.filter(x=>x.t==="A");
+  t.sort((a,b)=>a.s-b.s);
+  const max=9;
+  const bars=t.map(x=>`<div class="bar"><div class="lab">${x.y} ${esc(x.e)}<small>${esc(x.hp)} hk · ${esc(x.src)}</small></div><div class="tr"><div class="fl ${tcls(x.t)}" style="width:${(x.s/max*100).toFixed(1)}%"></div></div><div class="v">${fmt(x.s.toFixed(1))} s</div></div>`).join("");
+  return `
+  <section class="blk"><h3>0–60 mph <small>${t.length} tester, raskest først</small></h3>
+  <div class="ctl"><div class="seg" role="group" aria-label="Girtype">
+    <button data-tf="alle" aria-pressed="${state.tfilter==="alle"}">Alle</button>
+    <button data-tf="M" aria-pressed="${state.tfilter==="M"}">Manuell</button>
+    <button data-tf="A" aria-pressed="${state.tfilter==="A"}">Automat</button></div>
+    <span class="small"><span class="pill man">Manuell</span> hel stolpe · <span class="pill aut">Automat</span> skravert · <span class="pill unk">Gir ikke oppgitt</span> grå</span></div>
+  <div class="bars">${bars}</div>
+  <div class="note"><b>Les dette først</b><br>Resultatene er fra ulike tester, dekk, akselutvekslinger og år. De er ikke direkte sammenlignbare. Der kilden ikke nevner girtype står det.</div>
+  <h3 style="margin-top:28px;font-size:24px">Vanlige feil i nettkilder</h3>${li(PITFALLS)}
+  </section>`;
+}
+
+function viewChanges(){
+  return `<section class="blk"><h3>Endringer år for år</h3><div class="tl">${
+    Y.map((d,i)=>`<details ${i===0?"open":""}><summary><b>${d.y}</b><span>${esc(d.nm)}</span></summary>${li(d.chg)}</details>`).join("")
+  }</div></section>`;
+}
+
+/* ---------- VEDLIKEHOLD ---------- */
+/* k = sitert kilde, g = generell praksis for veteranbiler (ikke fra en fabrikktabell) */
+const MPLAN=[
+{t:"Oljenivå",i:"Ved hver tur, helst ved tanking",n:"Peilestaven er merket «ADD 1 QT.» og «FULL». Fabrikkens bruksanvisning sier at det beste tidspunktet er som siste punkt ved en tanking, så oljen rekker å renne tilbake til pannen.",k:"k",s:"76vette (sitat fra bruksanvisningen)"},
+{t:"Motorolje og filter",i:"Fabrikk 1974: hver 4. måned eller 6 000 mi (ca. 9 700 km). Fabrikk 1976: hver 6. måned eller 7 500 mi (ca. 12 100 km). Harde forhold (støv, tilhenger, lang tomgang, korte kalde turer): 3 000 mi (ca. 4 800 km) eller 2–3 måneder. For veteranbruk: minst én gang i året.",n:"Fabrikken krevde SE-olje. Mange forumseiere bytter hver 3 000–5 000 mi. Original kamaksel er flat-tappet og trenger olje med nok sink (ZDDP). Forumet nevner 10W-40 og 15W-40, men sjekk anbefalingen for flat-tappet motorer hos en oljeprodusent.",k:"k",s:"CorvetteForum (sitat fra 1974- og 1976-bruksanvisningen og eiermeninger). Sinkpunktet er generell erfaring."},
+{t:"Kjølevæske",i:"Hvert 2. år",n:"Kapasitet 1978: 20,7 qt (andre år og motorer: se håndbok). Sjekk slanger og drivreim samtidig.",k:"g",s:"Intervall er generell praksis. Kapasiteten kommer fra Corvette Action Center."},
+{t:"Bremsevæske",i:"Hvert 2. år",n:"Bremsevæske tar opp fuktighet. Skift også etter lang stillestående tid. Ikke bland silikonbasert (DOT 5) med glykolbasert væske.",k:"g",s:"Generell praksis"},
+{t:"Tennplugger",i:"Ved hver tune-up, vanligvis annethvert år eller ved feil",n:"Pluggtype, glipe og tenningstidspunkt står i håndboken for din motor og årsmodell. Jeg har ikke funnet dem for alle motorer.",k:"g",s:"Generell praksis"},
+{t:"Tenning: brytere og kondensator",i:"Årlig (1968–74)",n:"Elektronisk tenning (HEI) kom i 1975 og har ingen brytere.",k:"g",s:"Årstall fra Wikipedia, intervall er generell praksis"},
+{t:"Ventilspill (bare solide løftere)",i:"Ved tune-up og ved ventilstøy",n:"Gjelder for eksempel LT-1. Fabrikkspesifikasjon for LT-1 er 0,024 tommer innsug og 0,030 tommer eksos ifølge Corvette Action Center. Hydrauliske løftere (de fleste motorer) skal ikke justeres på samme måte.",k:"k",s:"Corvette Action Center (artikkel om solid-lifter-justering)"},
+{t:"Tomgang og blanding",i:"Ved tune-up",n:"For 1970 LT-1 beskrives tomgang på 900 o/min med ca. 12 tommer vakuum. Se veiledningen. Verdiene for andre motorer må sjekkes i håndboken.",k:"k",s:"NCRS-forum (eiererfaring)"},
+{t:"Girolje (manuell og automat)",i:"Sjekk nivå årlig. Skift ved ukjent historikk.",n:"Automatkassen er en Turbo Hydra-Matic (1982: 700-R4). Se avsnittet om årsmodeller.",k:"g",s:"Generell praksis"},
+{t:"Differensialolje",i:"Sjekk nivå årlig. Skift ved ukjent historikk.",n:"Positraction sitter på over 95 % av bilene i 1969-årgangen (se årsmodellene). Sperrediff trenger riktig olje eller additiv, så sjekk type i håndboken.",k:"g",s:"Wikipedia (Positraction), ellers generell praksis"},
+{t:"Smøring av understell og styring",i:"Årlig",n:"Smørenipler på forhjulsoppheng og styrestag. Antall og plassering varierer, så gå over hele bilen.",k:"g",s:"Generell praksis"},
+{t:"Fronthjullagre",i:"Ettersyn hvert 2. år eller ved bremseservice",n:"Rens, kontroller og pakk på nytt med hjullagerfett.",k:"g",s:"Generell praksis"},
+{t:"Drivreimer og kjølerslanger",i:"Årlig kontroll",n:"Bytt reimer med sprekker og slanger som er harde, myke eller oppsvulmede.",k:"g",s:"Generell praksis"},
+{t:"Drivstoffslanger og filter",i:"Årlig kontroll",n:"Moderne bensin med etanol kan skade gamle gummislanger og tetninger. Bytt slanger som er harde eller sprukne.",k:"g",s:"Generell praksis"},
+{t:"Batteri",i:"Månedlig kontroll i sesong. Vedlikeholdslading om vinteren.",n:"Rengjør polene og kontroller festet.",k:"g",s:"Generell praksis"},
+{t:"Dekk",i:"Kontroller alderen hvert år",n:"Dekk eldre enn ca. 6–10 år bør byttes selv om mønsteret er bra. Alderen står i DOT-koden.",k:"g",s:"Generell praksis"},
+{t:"Rust: stålbur, ramme og bak hjulhus",i:"Årlig, med bilen løftet",n:"Stålburet rundt frontruten og T-toppen og rammen er de viktigste stedene. Se også under fiberglassen etter sprekker og gamle reparasjoner.",k:"g",s:"Generell praksis"},
+{t:"Bremserør, slanger og kalipere",i:"Årlig kontroll",n:"Se etter rust på rørene, sprekker i slangene og lekkasje rundt kaliperne.",k:"g",s:"Generell praksis"},
+{t:"Frontlykter, viskerluke, T-top og rutepakninger",i:"Årlig kontroll",n:"Skjulte frontlykter er vakuumstyrt på alle C3 (1968–82). Viskerluken er vakuumstyrt til og med 1972. Se etter lekkasje i vakuumslanger og rundt T-top.",k:"g",s:"Wikipedia (viskerluke til 1972), frontlykter og resten er generell kunnskap om C3"},
+{t:"Vinterlagring og oppstart om våren",i:"Hver høst og vår",n:"Se veiledningen om vinterlagring.",k:"g",s:"Generell praksis"}
+];
+
+const GUIDES=[
+{t:"Jekke bilen trygt",when:"Alt arbeid under bilen.",tools:"Garasjejekk, to jekkbukker, klosser.",steps:[
+"Parker på flatt, fast underlag og sett håndbrekket på. Kloss hjulene som blir stående på bakken.",
+"Sett jekkhodet på rammebjelken bak førerens forhjul. Sett ikke jekken på fiberglass, styreledd eller opphengsdeler.",
+"Løft bilen og sett en jekkbukk under rammebjelken ved siden av som sikring.",
+"Senk bilen sakte ned på bukken, slik at jekken blir et ekstra sikkerhetsnivå.",
+"Gå aldri under en bil som bare står på jekk.",
+"Når du er ferdig: løft litt, fjern bukken og senk bilen sakte."],
+warn:"Fiberglasskarosseriet tåler ikke punktbelastning. Bruk bare rammen.",src:"CorvetteForum (oljeskifteartikkel) for jekkpunktet. Resten er generell praksis.",k:"k"},
+{t:"Sjekke oljenivå",when:"Ved hver tur.",tools:"Fille eller papir.",steps:[
+"Parker på flatt underlag.",
+"Trekk ut peilestaven og tørk den ren.",
+"Stikk den helt ned og trekk den opp igjen.",
+"Les nivået. Det skal ligge mellom «ADD 1 QT.» og «FULL». Ikke overfyll.",
+"Fyll på olje av samme type hvis nivået er lavt."],
+warn:"Fabrikkens bruksanvisning sier at det beste tidspunktet er som siste punkt ved tanking, så oljen rekker å renne tilbake. Noen eiere sjekker kald motor.",src:"76vette",k:"k"},
+{t:"Bytte motorolje og filter",when:"Hver sesong eller etter intervallet i planen.",tools:"Jekk og jekkbukker, oppsamlingsbalje, pluggnøkkel, filterte nøkkel (valgfritt), ny olje og filter, papir.",steps:[
+"Varm motoren kort, slå den av og jekk bilen trygt (se egen veiledning).",
+"Sett oppsamleren under pannen. Dreneringspluggen peker vanligvis bakover. Løsne pluggen og flytt oppsamleren når strålen går over til dryppende.",
+"Fjern oljefilteret ved siden av pannen. Det renner olje nedover når du løsner det, så gå sakte frem.",
+"La motoren dryppe ut i ca. 5 minutter. Sjekk gjengene på dreneringspluggen. Flate gjenger kan gi lekkasje eller skade pannen.",
+"Fyll det nye filteret med olje og smør tetningen med litt olje. Kontroller at den gamle pakningen ikke sitter igjen. Skru filteret på for hånd, aldri med verktøy.",
+"Sett inn dreneringspluggen forsiktig for å unngå kryssgjenging. Stram den fast uten å overstramme. Kilden oppgir ikke moment, så slå det opp i håndboken.",
+"Senk bilen. Fyll på olje. 1978-motoren tar 5,0 qt med filter, og andre motorer og årsmodeller kan ha en annen mengde.",
+"Les peilestaven, start motoren og se etter lekkasje rundt filter og plugg. Kontroller nivået igjen etter at motoren har stått.",
+"Lever brukt olje og filter til et mottak."],
+warn:"Jeg har ikke funnet moment for dreneringspluggen, riktig filter eller oljemengde for alle motorer. Slå dem opp for din motor.",src:"CorvetteForum (oljeskifteartikkel) og Corvette Action Center (1978-kapasitet).",k:"k"},
+{t:"Bytte kjølevæske",when:"Hvert 2. år.",tools:"Oppsamlingsbalje, ny kjølevæske, destillert vann, slangeklemmer ved behov.",steps:[
+"La motoren bli helt kald. Åpne aldri kjølerlokket på en varm motor.",
+"Sett oppsamleren under kjøleren og åpne tappeplugg eller kran. Åpne også tappepluggene i blokken hvis motoren har dem.",
+"La alt renne ut. Sjekk slanger, klemmer og reim mens kjølesystemet er tomt.",
+"Lukk plugger og kraner. Fyll på ny kjølevæske blandet etter produsentens anbefaling. Systemet tar ca. 20,7 qt i 1978. Andre år og motorer: sjekk håndboken.",
+"Start motoren med lokket av og varmeapparatet på høyeste varme. Fyll på mens luften går ut.",
+"Sett på lokket når nivået er stabilt. Kontroller nivået etter første tur og se etter lekkasje."],
+warn:"Kjølevæske er giftig. Lever brukt væske til et mottak.",src:"1978-kapasitet fra Corvette Action Center. Prosedyren er generell praksis.",k:"g"},
+{t:"Bytte bremsevæske og lufte bremsene",when:"Hvert 2. år, eller etter arbeid på bremsene.",tools:"Ny bremsevæske, klar slange, glass, ringnøkkel til luftenippel, hjelper.",steps:[
+"Jekk bilen trygt og ta av hjulene (se egen veiledning).",
+"Fyll beholderen på hovedsylinderen med ny væske. Hold den fylt gjennom hele jobben, ellers trekkes det luft inn.",
+"Start med hjulet lengst fra hovedsylinderen (høyre bak), deretter venstre bak, høyre foran og venstre foran.",
+"Sett slangen på luftenippelen med enden i væske i glasset. Be hjelperen trå bremsen ned og holde den.",
+"Åpne nippelen litt til væsken renner. Lukk den igjen før hjelperen slipper pedalen.",
+"Gjenta til væsken som kommer ut er ren og uten luftbobler. Gå videre til neste hjul.",
+"Kontroller at pedalen er fast. Prøv bilen på lav hastighet på et sikkert sted før du kjører vanlig."],
+warn:"Bremser er sikkerhetsutstyr. Er du usikker, la et verksted gjøre jobben. Bruk riktig type væske (DOT 3 eller DOT 4, ikke bland med DOT 5).",src:"Generell praksis. Sjekk rekkefølge og type i håndboken for din årsmodell.",k:"g"},
+{t:"Smøre understell og styring",when:"Årlig.",tools:"Fettpistol, chassisfett.",steps:[
+"Jekk bilen trygt slik at opphenget henger fritt (se egen veiledning).",
+"Tørk av smørenippelene på forhjulsopphenget og styrestagene.",
+"Pump fett til du ser at gummibelgen er litt fyldig. Ikke overfyll, ellers sprekker belgen.",
+"Tørk av overflødig fett.",
+"Se etter slitasje, slark og sprukne belger mens du er der."],
+warn:"Antall og plassering av smørenipler varierer med årsmodell. Gå over hele bilen.",src:"Generell praksis",k:"g"},
+{t:"Justere ventilspill på solide løftere (for eksempel LT-1)",when:"Bare motorer med solide løftere. Ikke hydrauliske.",tools:"Følerblad, ringnøkkel til justering, nye ventildekselpakninger, servicehåndbok.",steps:[
+"Slå opp ventilsekvens og innstilling for din motor i servicehåndboken.",
+"La motoren være kald (anbefalingen i artikkelen). Fabrikkhåndboken oppgir varm og gående motor for noen kamaksler.",
+"Ta av ventildekslene.",
+"For LT-1 oppgir Corvette Action Center fabrikkspek 0,024 tommer innsug og 0,030 tommer eksos. Artikkelen beskriver også innsug ved 0,021 med stempel i topp og eksos ved 0,026 ved 90 grader før topp.",
+"Juster ventilene i den rekkefølgen og stillingen håndboken angir, og roter motoren videre.",
+"Kontroller de første ventilene når du har rundet.",
+"Monter dekslene med nye pakninger og start motoren. Se etter lekkasje og lytt etter ventilstøy."],
+warn:"Kildene spriker på verdier og metode. Bruk tallene her som utgangspunkt og bekreft dem i servicehåndboken. Kjør aldri motoren med ventildekslene av.",src:"Corvette Action Center og NCRS-forum",k:"k"},
+{t:"Tomgang og blanding (1970 LT-1)",when:"Ved tune-up.",tools:"Nøyaktig turteller, vakuummåler.",steps:[
+"Varm motoren helt opp.",
+"Still tomgangen til 900 o/min med en nøyaktig turteller.",
+"Drei blandingsskruene og se om tomgangen eller vakuumet øker.",
+"Hvis turtallet stiger, still tomgangen tilbake til 900 o/min.",
+"Gjenta til skruene ikke lenger gir økt turtall.",
+"Målet er stabil tomgang på 900 o/min med ca. 12 tommer vakuum."],
+warn:"Tallene er fra en enkelt eierguide (NCRS-forum) og gjelder 1970 LT-1. Sjekk verdiene for din motor.",src:"NCRS-forum",k:"k"},
+{t:"Skifte olje på manuell girkasse og differensial",when:"Ved ukjent historikk, eller hvis oljen er mørk eller lukter brent.",tools:"Oppsamlingsbalje, pumpe, riktig girolje, ny pakning ved behov.",steps:[
+"Jekk bilen trygt og la den stå jevnt (se egen veiledning).",
+"Løsne påfyllingspluggen først. Får du den ikke opp, må du ikke tappe oljen.",
+"Fjern dreneringspluggen og la oljen renne ut. Se etter metallspon på plugg og olje.",
+"Sett dreneringspluggen på igjen og fyll til nedre kant av påfyllingshullet.",
+"For differensialer med sperre (Positraction) brukes olje eller additiv for sperrediff. Sjekk type i håndboken.",
+"Sett på påfyllingspluggen og tørk av. Test bilen og se etter lekkasje."],
+warn:"Automatkassen (Turbo Hydra-Matic) har egen prosedyre med skifte av filter og pakning. Se håndboken.",src:"Generell praksis",k:"g"},
+{t:"Sesongsjekk før første tur",when:"Hver vår, og etter lang stillestående tid.",tools:"Lommelykt, jekk og bukker, fille.",steps:[
+"Se etter lekkasje under bilen og sjekk nivå på olje, kjølevæske, bremsevæske og servostyringsolje.",
+"Sjekk batteri og poler. Lad om nødvendig.",
+"Sjekk dekktrykk og dekkalder. Se etter sprekker i sidene.",
+"Test lys og blinklys. Frontlyktene (vakuumstyrt på alle C3) skal slå opp og ned uten å henge. Se etter lekkasje i vakuumslangene hvis de ikke gjør det.",
+"Test viskere og viskerluke, ruter og T-top-pakninger.",
+"Løft bilen og se etter rust i stålburet og rammen. Se etter sprekker i fiberglassen.",
+"Trå bremsepedalen. Den skal være fast. Se etter lekkasje ved kaliperne.",
+"Start motoren, hør etter unormale lyder og se etter lekkasje når den er varm.",
+"Kjør en rolig prøvetur før du bruker bilen vanlig."],
+warn:"Er pedalen myk eller lekker bremsene, må bilen ikke kjøres før feilen er funnet.",src:"Generell praksis. Viskerluken er vakuumstyrt til 1972 ifølge Wikipedia. Frontlyktene er vakuumstyrt på alle C3.",k:"g"},
+{t:"Vinterlagring",when:"Hver høst.",tools:"Drivstoffstabilisator, batterilader, pustende dekken.",steps:[
+"Bytt olje og filter før lagring. Brukt olje inneholder syrer.",
+"Fyll tanken og tilsett drivstoffstabilisator. Kjør noen kilometer så den kommer ut i systemet.",
+"Vask og voks bilen. Rengjør interiøret og la ingenting spiselig ligge igjen.",
+"Plasser bilen tørt og helst oppvarmet. Bruk et pustende dekken, ikke plast.",
+"Koble fra batteriet og lad det med vedlikeholdslader, eller ta det ut.",
+"Øk dekktrykket litt for å unngå flate flekker, eller sett bilen på bukker.",
+"Ikke bruk håndbrekket over lang tid. Sett i gir (manuell) eller P (automat) og kloss hjulene.",
+"Sett ut musefeller eller mottiltak. Tett eksosrør og luftinntak med noe som du ikke kan glemme (for eksempel en synlig lapp).",
+"Om våren: fjern tettinger, kontroller alle væsker og gjør sesongsjekken."],
+warn:"Fiberglasskarosserier tåler fuktighet bra, men stålburet og rammen ruster. Tørr lagring er viktig.",src:"Generell praksis",k:"g"}
+];
+
+const MCHG=[
+"1968–82: Skjulte frontlykter er vakuumstyrt hele C3-perioden. Viskerluken er vakuumstyrt til og med 1972. Sjekk vakuumslanger og aktuatorer. Wikipedia kaller viskerluken problematisk.",
+"1970: LT-1 med solide løftere. Ventilspill må justeres.",
+"1973: Radialdekk er standard og karosseriet har gummifester. Bakre støtfanger er urethan fra 1974.",
+"1975: Katalysator og elektronisk tenning (ingen tennbrytere). Drivstoffmåler og tanklokk er merket «unleaded fuel only».",
+"1976: Stålgulv erstatter fiberglassgulv. Cowl-induction er droppet.",
+"1977: Servostyring og servobremser er standard.",
+"1978: Drivstofftanken vokser fra 17 til 24 gal. Reservehjulet er et lite nødhjul.",
+"1980: Aluminiums Dana 44 IRS-differensial erstatter støpejerns 10-bolts.",
+"1982: Cross-Fire Injection og 700-R4 automat. Wikipedia skriver at 700-R4 viste seg problematisk."
+];
+
+const BOOKS=[
+{t:"Haynes: Chevrolet Corvette 1968–1982",n:"Dekker alle V8 i 1968–82. Kapitler om tune-up og rutinevedlikehold, motor, kjøling, varme og AC, drivstoff og eksos, elektrisk anlegg, utslipp, manuelle og automatiske girkasser, clutch og drivlinje, bremser, understell og styring, karosseri og koblingsskjemaer. 700+ bilder og diagrammer. Samleutgaven (innbundet) kostet 57,45 USD hos Haynes i dag, trykkes på bestilling og kan ikke returneres.",u:"https://us.haynes.com/products/classic-collectors-edition-chevrolet-corvette-68-82-haynes-repair-manual"},
+{t:"Chilton: Chevrolet Corvette 1963–1982",n:"Chilton Repair Manual, utgitt 1997. Dekker også C2. Pris ikke sjekket.",u:"https://www.tmbbooks.com/en/autom_Chevroletrep30.html"},
+{t:"Motorbooks: Corvette 1966–1982 Shop Manual",n:"Utgitt 1986. Pris ikke sjekket.",u:"https://www.tmbbooks.com/en/autom_Chevroletrep30.html"},
+{t:"Autobooks: Chevrolet Corvette V8 (C2 og C3) Owners Workshop Manual",n:"Dekker C3 for 1968–1971 (og C2 1965–67). Pris ikke sjekket.",u:"https://www.tmbbooks.com/en/autom_Chevroletrep30.html"},
+{t:"Bruksanvisning for din årsmodell (reprint)",n:"Reprints finnes per årsmodell, for eksempel fra Eckler's. De inneholder fabrikkens grunnleggende bruks- og vedlikeholdsinstruksjoner. Det er her de fabrikkoppgitte intervallene for din bil står."},
+{t:"Originale GM-servicehåndbøker (reprint)",n:"Detroit Iron selger reprints av fabrikkens servicehåndbøker for 1963–65. Jeg har ikke sjekket om det finnes tilsvarende for 1968–82. Slike håndbøker har moment, spesifikasjoner og prosedyrer for din årsmodell."}
+];
+
+function viewMaint(){
+  const sub=state.msub;
+  const kp=k=>`<span class="pill ${k==="k"?"k-src":"k-gen"}">${k==="k"?"Sitert kilde":"Generell praksis"}</span>`;
+  const seg=`<div class="seg" role="group" aria-label="Vedlikehold">
+    <button data-msub="plan" aria-pressed="${sub==="plan"}">Plan</button>
+    <button data-msub="guider" aria-pressed="${sub==="guider"}">Veiledninger</button>
+    <button data-msub="aar" aria-pressed="${sub==="aar"}">Etter årsmodell</button>
+    <button data-msub="bok" aria-pressed="${sub==="bok"}">Håndbøker</button></div>`;
+  let body="";
+  if(sub==="plan"){
+    body=`<div class="note"><b>Les dette først</b><br>Fabrikkens intervaller er funnet bare for 1974 og 1976 (olje). Resten er alminnelig praksis for veteranbiler og ikke fra en fabrikktabell. Bruksanvisningen for din årsmodell har de riktige tallene.</div>
+    <div class="scroll"><table style="min-width:820px"><thead><tr><th>Hva</th><th>Intervall</th><th>Merknad</th><th>Kilde</th></tr></thead><tbody>${
+      MPLAN.map(r=>`<tr><td><span class="code">${esc(r.t)}</span></td><td>${esc(r.i)}</td><td>${esc(r.n)}</td><td>${kp(r.k)}<span class="sub">${esc(r.s)}</span></td></tr>`).join("")
+    }</tbody></table></div>`;
+  } else if(sub==="guider"){
+    body=`<div class="note"><b>Les dette først</b><br>Veiledningene er laget for å gi deg oversikt. De erstatter ikke servicehåndboken. Moment, mengder og innstillinger varierer med motor og årsmodell, og der jeg ikke har funnet dem står det.</div>
+    <div class="gl">${GUIDES.map(g=>`<details><summary>${esc(g.t)}</summary>
+      <p class="small">Passer for: ${esc(g.when)}</p>
+      <p><b>Trenger:</b> ${esc(g.tools)}</p>
+      <ol class="steps">${g.steps.map(x=>`<li>${esc(x)}</li>`).join("")}</ol>
+      ${g.warn?`<div class="note"><b>Obs</b><br>${esc(g.warn)}</div>`:""}
+      <p class="small">${kp(g.k)} ${esc(g.src)}</p></details>`).join("")}</div>`;
+  } else if(sub==="aar"){
+    body=`<p class="lead">Dette endret hva du må passe på, per årsmodell.</p>${li(MCHG)}`;
+  } else {
+    body=`<p class="lead">Ingen enkelt bok dekker alt steg for steg for hver årsmodell. Haynes er nærmest. For å få riktige spesifikasjoner og intervaller bør du kombinere en verkstedbok med bruksanvisningen for din årsmodell.</p>
+    <div class="gl">${BOOKS.map(b=>`<details open><summary>${esc(b.t)}</summary><p>${esc(b.n)}</p>${b.u?`<p class="small"><a href="${b.u}" target="_blank" rel="noopener">Kilde</a></p>`:""}</details>`).join("")}</div>
+    <div class="note"><b>Tips</b><br>Haynes dekker 1968–82 i én bok, så spesifikasjoner varierer mellom år og motorer. Sjekk dem mot bruksanvisningen for din årsmodell.</div>`;
+  }
+  return `<section class="blk"><h3>Vedlikehold <small>Plan, veiledninger og håndbøker</small></h3><div class="ctl">${seg}</div>${body}</section>`;
+}
+
+/* ---------- KJØPSVERKTØY ---------- */
+const store={
+  get(k,d){try{const v=localStorage.getItem("c3:"+k);return v===null?d:JSON.parse(v);}catch(e){return d;}},
+  set(k,v){try{localStorage.setItem("c3:"+k,JSON.stringify(v));return true;}catch(e){return false;}}
+};
+const CL_GEN=[
+["Papirer og identitet",[
+"VIN på bilen stemmer med VIN i papirene (eierbevis/registrering). Se også Dekoder-fanen.",
+"VIN-plata sitter ordentlig og er ikke åpenbart byttet (nagler, riper, lim).",
+"Motorblokkens stempling («VIN-derivat», for eksempel 70S og de siste sifrene) stemmer med bilens VIN. Se Dekoder-fanen.",
+"Motorens byggedato ligger før bilens byggedato og ikke langt unna.",
+"Sporbar historikk: tidligere eiere, servicebøker, kvitteringer, evt. bilder fra restaurering."]],
+["Karosseri og rust",[
+"Stålburet rundt frontrute og T-topp: se etter rust og gamle reparasjoner, særlig ved hjørner og under pakninger.",
+"Rammen: rust, sprekker og skjøter, særlig bak og ved hjulopphengets feste.",
+"Under bilen og i hjulhusene: rust, lekkasjer og dårlig utført arbeid.",
+"Fiberglass: sprekker, bølger, tydelige reparasjoner og ny lakk som skjuler noe. Se etter spor av lakksprekker (stjerner).",
+"Panelspalter og dører: jevne og lukker som de skal.",
+"T-topp og bakvindu: lekkasje, pakninger og tilstand på tak og festene."]],
+["Motor og drivlinje",[
+"Kald start først: la selgeren ikke varme motoren før du kommer.",
+"Oljetrykk, røyk fra eksosen og lyder (bank, ventilstøy, hvin).",
+"Kjølevæske og olje: se etter olje i kjølevæsken eller omvendt, og lekkasjer.",
+"Girkasse og clutch: synkronisering, glipp, hvin. Automat: slag mellom gir og forsinkelse.",
+"Differensial og drivaksler: hyl, klonk i svinger.",
+"Sjekk at motorkode og utstyr stemmer med det annonsen sier (for eksempel L46)."]],
+["Bremser, understell og styring",[
+"Bremsepedalen er fast og bilen trekker ikke til siden.",
+"Slark i styring og oppheng, slitte bøssinger, lekkende støtdempere.",
+"Dekkalder (DOT-koden), sprekker og slitasjemønster."]],
+["Elektrisk og vakuum",[
+"Skjulte frontlykter åpner og lukker (vakuumstyrt) uten å henge.",
+"Viskerluke (til og med 1972, vakuumstyrt) og viskere fungerer.",
+"Lys, blinklys, instrumenter, tachometer og andre målere virker.",
+"AC, varme og vifte virker (hvis bilen har AC)."]],
+["Prøvetur og uavhengig vurdering",[
+"Prøvekjør både kald og varm bil, og kjør lengre enn en kort runde.",
+"Kom med en kjenner av C3, eller bestill uavhengig besiktigelse før du betaler.",
+"Ta mange bilder, også av understell, VIN-plate, motorstempling og trim tag."]]
+];
+const CL_DONE_KEY="cl";
+function toolsClYear(){return store.get("clyear",1970);}
+function clItems(year){
+  const items=[];
+  CL_GEN.forEach(g=>g[1].forEach((t,i)=>items.push({id:"g:"+g[0]+":"+i,grp:g[0],t})));
+  const d=Y.find(x=>x.y===year);
+  if(d) d.buy.check.forEach((t,i)=>items.push({id:"y:"+year+":"+i,grp:"Fra kjøpsguiden for "+year,t}));
+  return items;
+}
+function viewChecklist(){
+  const year=toolsClYear(), done=store.get("cl:"+year,{});
+  const items=clItems(year);
+  const n=items.filter(x=>done[x.id]).length;
+  const grps=[...new Set(items.map(x=>x.grp))];
+  const opts=Y.map(d=>`<option value="${d.y}" ${d.y===year?"selected":""}>${d.y}</option>`).join("");
+  return `<div class="ctl"><label>Årsmodell: <select data-clyear aria-label="Årsmodell for sjekklisten">${opts}</select></label>
+    <span class="small" id="clcount">${n} av ${items.length} avkrysset</span>
+    <button data-clprint>Skriv ut</button><button data-clreset>Nullstill</button></div>
+  <div class="note">Avkrysningene lagres bare i denne nettleseren på denne enheten. Listen er alminnelig sjekkpunkter for en C3 og punktene fra kjøpsguiden. Den erstatter ikke en uavhengig besiktigelse.</div>
+  ${grps.map(g=>`<section class="blk"><h3 style="font-size:20px">${esc(g)}</h3><ul class="cl">${items.filter(x=>x.grp===g).map(x=>`<li><label><input type="checkbox" data-cl="${esc(x.id)}" ${done[x.id]?"checked":""}> <span>${esc(x.t)}</span></label></li>`).join("")}</ul></section>`).join("")}
+  <section class="blk"><h3 style="font-size:20px">Notater</h3><textarea data-clnotes rows="5" placeholder="Notater fra visningen" aria-label="Notater">${esc(store.get("clnotes:"+year,""))}</textarea></section>`;
+}
+
+/* Dekoder: bare det som er funnet i kilder */
+const SUF70={
+CTD:"350 cid, 300 hk, manuell",CTG:"350 cid, 300 hk, automat",CTL:"350 cid, 300 hk, manuell",CTM:"350 cid, 300 hk, automat",
+CTH:"350 cid, 350 hk (L46), manuell",CTN:"350 cid, 350 hk (L46), manuell",CTJ:"350 cid, 350 hk (L46), manuell, AC",CTO:"350 cid, 350 hk (L46), manuell, AC",
+CTP:"350 cid, 350 hk (L46), manuell, transistortenning",CTQ:"350 cid, 350 hk (L46), manuell, AC, transistortenning",
+CTK:"350 cid, 370 hk (LT-1), manuell, transistortenning",CTR:"350 cid, 370 hk (LT-1), manuell, transistortenning",CTU:"350 cid, 370 hk (LT-1), manuell, transistortenning",CTV:"350 cid, 370 hk (ZR1), manuell",
+CGW:"454 cid, 390 hk (LS5), automat",CRJ:"454 cid, 390 hk (LS5), automat, transistortenning",CRI:"454 cid, 390 hk (LS5), manuell, transistortenning",CZU:"454 cid, 390 hk (LS5), manuell"
+};
+const AXLE70={CAK:"3,36",CAL:"3,08",CAN:"3,55",CAP:"4,11",CAS:"3,70",CAV:"3,08",CAW:"3,08",CLR:"3,36",
+CAM:"Positraction 3,36",CAO:"Positraction 3,70",CAT:"Positraction 3,08 HD",CAU:"Positraction 3,36 HD",CAX:"Positraction 3,36 HD",CAY:"Positraction 2,73 (Turbo Hydra-Matic)",CAZ:"Positraction 3,55 HD",CFA:"Positraction 3,70",CFB:"Positraction 4,11 HD",CFC:"Positraction 4,56 HD"};
+function decodeVin(v){
+  v=v.toUpperCase().replace(/\s/g,"");
+  if(!v) return "";
+  if(!/^[0-9A-Z]{13}$/.test(v)) return `<p class="small">VIN skal ha 13 tegn. Du har skrevet ${v.length}.</p>`;
+  const yr={8:"1968",9:"1969","0":"1970","1":"1971"}[v[5]];
+  const body={"37":"coupé (to dører)","67":"cabriolet (to dører)"}[v.slice(3,5)];
+  const pl=v[6]==="S"?"St. Louis":"";
+  const seq=v.slice(7);
+  if(!/^194[0-9]{2}[0-9]/.test(v)||!yr) return `<p class="small">Dette ser ikke ut som en VIN i formatet for 1968–71 (for eksempel 194370S400001). Format for 1972 og senere er ikke dekket her.</p>`;
+  return `<table><tbody>
+   <tr><td class="code">${v[0]}</td><td>Divisjon: ${v[0]==="1"?"Chevrolet":"ukjent"}</td></tr>
+   <tr><td class="code">${v.slice(1,3)}</td><td>Serie: ${v.slice(1,3)==="94"?"Corvette":"ukjent"}</td></tr>
+   <tr><td class="code">${v.slice(3,5)}</td><td>Karosseri: ${body||"ukjent kode"}</td></tr>
+   <tr><td class="code">${v[5]}</td><td>Årsmodell: ${yr}</td></tr>
+   <tr><td class="code">${v[6]}</td><td>Fabrikk: ${pl||"ukjent kode i denne listen"}</td></tr>
+   <tr><td class="code">${seq}</td><td>Produksjonsnummer</td></tr></tbody></table>
+   <p class="small">Motorens stempling skal ha «VIN-derivat»: årssiffer, fabrikkbokstav og produksjonsnummer. For denne bilen: <b>${v.slice(4,7)+seq}</b> (for eksempel «70S411547» på en 1970-bil ifølge NCRS-tråden).</p>`;
+}
+function decodeStamp(s){
+  s=s.toUpperCase().replace(/\s/g,"");
+  if(!s) return "";
+  const m=s.match(/^([A-Z])(\d{2})(\d{2})([A-Z]{3})$/);
+  if(!m) return `<p class="small">Forventet format: én bokstav, fire sifre og tre bokstaver, for eksempel V0513CJL.</p>`;
+  const mm=+m[2], dd=+m[3];
+  const plant={V:"Flint, Michigan"}[m[1]];
+  const date=(mm>=1&&mm<=12&&dd>=1&&dd<=31)?`${dd}.${mm}.`:"ugyldig dato";
+  const suf=SUF70[m[4]];
+  return `<table><tbody>
+   <tr><td class="code">${m[1]}</td><td>Motorfabrikk: ${plant||"kode ikke i listen min (Flint er V ifølge kilden jeg brukte)"}</td></tr>
+   <tr><td class="code">${m[2]}${m[3]}</td><td>Byggedato: ${date}</td></tr>
+   <tr><td class="code">${m[4]}</td><td>Suffiks: ${suf?esc(suf)+" (1970-liste fra CorvSport)":"ikke i 1970-listen. Det kan være et annet år eller en kode som mangler her."}</td></tr></tbody></table>`;
+}
+function decodeAxle(a){
+  a=a.toUpperCase().replace(/\s/g,"");
+  if(!a) return "";
+  return AXLE70[a]?`<p><b>${a}</b>: ${AXLE70[a]} (1970-liste fra CorvSport)</p>`:`<p class="small">${esc(a)} finnes ikke i 1970-listen min.</p>`;
+}
+function viewDecoder(){
+  return `<div class="note"><b>Les dette først</b><br>Dekoderen dekker VIN for 1968–71, motorsuffiks og akselkoder for 1970. Sistnevnte kommer fra én kilde (CorvSport) og kan ha feil. Stemplene på en bil kan også være overstemplet, så et treff i listen beviser ikke at motoren er original. Bruk den som utgangspunkt og spør NCRS eller en C3-ekspert om bilen er dyr.</div>
+  <section class="blk"><h3 style="font-size:20px">VIN (1968–71)</h3>
+   <div class="ctl"><input type="text" data-dec="vin" placeholder="For eksempel 194370S400001" aria-label="VIN" autocomplete="off" spellcheck="false"></div><div id="dec-vin"></div>
+   <p class="small">Struktur fra Corvette Action Center (1969-side). Det samme formatet brukes i eksempler fra NCRS for 1970.</p></section>
+  <section class="blk"><h3 style="font-size:20px">Motorstempling (1970)</h3>
+   <div class="ctl"><input type="text" data-dec="stamp" placeholder="For eksempel V0513CJL" aria-label="Motorstempling" autocomplete="off" spellcheck="false"></div><div id="dec-stamp"></div>
+   <p class="small">Stemplingen sitter på blokken og har fabrikkbokstav, dato (MMDD) og suffiks. Støpenummer og støpedato står på blokken ved bjelleflensen (bellhousing) ifølge kildene. Der kan det stå for eksempel «E121». Formatet er forklart i NCRS-tråden om 1970 matching numbers.</p></section>
+  <section class="blk"><h3 style="font-size:20px">Akselkode (1970)</h3>
+   <div class="ctl"><input type="text" data-dec="axle" placeholder="For eksempel CAM" aria-label="Akselkode" autocomplete="off" spellcheck="false"></div><div id="dec-axle"></div></section>
+  <section class="blk"><h3 style="font-size:20px">Slik sjekker du «matching numbers»</h3>${li([
+"Sammenlign VIN på bilen med VIN-derivatet på motorblokken. En 1970-bil skal ha et derivat som «70S» etterfulgt av produksjonsnummeret (NCRS-tråd).",
+"Sammenlign byggedatoen på motoren med datoen på trim tag (på førerdørens hengslestolpe ifølge Corvette Action Center) og andre tagger. De skal ligge i riktig rekkefølge.",
+"Sjekk VIN-plata: bytte av plate eller nagler er et varselsignal (NCRS-tråd).",
+"Sjekk også rammestemplingen på førersiden, som noen eksperter anbefaler (NCRS-tråd).",
+"Merk at «matching» kan bety litt ulike ting. Spør hva selgeren mener, og få det dokumentert."])}
+   <p class="small">Kilder: NCRS-forumet (70 Corvette Matching Numbers), Corvette Action Center og CorvSport (se Kilder-fanen).</p></section>`;
+}
+
+const CMP_FIELDS=[["Annonse/navn","t"],["Pris (NOK eller SEK)","n"],["Årsmodell","n"],["Motor (L46 osv.)","t"],["Gir","t"],["AC","t"],["Kilometerstand","n"],["Matching numbers","t"],["Rust (stålbur og ramme)","t"],["Lakk og interiør","t"],["Dokumentasjon","t"],["Sted","t"],["Notater","t"]];
+function viewCompare(){
+  const A=store.get("cmpA",{}), B=store.get("cmpB",{});
+  const rows=CMP_FIELDS.map(([l],i)=>{
+    const a=(A[i]||"").trim(), b=(B[i]||"").trim(), diff=a&&b&&a.toLowerCase()!==b.toLowerCase();
+    return `<tr ${diff?'class="cmp-diff"':""}><th scope="row">${esc(l)}</th><td><input type="text" data-cmp="A:${i}" value="${esc(A[i]||"")}" aria-label="${esc(l)}, bil A"></td><td><input type="text" data-cmp="B:${i}" value="${esc(B[i]||"")}" aria-label="${esc(l)}, bil B"></td></tr>`;
+  }).join("");
+  return `<div class="note">Fyll inn to biler. Rader der svarene er ulike får en markering. Alt lagres bare i denne nettleseren.</div>
+  <div class="scroll"><table style="min-width:520px"><thead><tr><th></th><th>Bil A</th><th>Bil B</th></tr></thead><tbody id="cmprows">${rows}</tbody></table></div>
+  <div class="ctl"><button data-cmpreset>Tøm</button></div>`;
+}
+
+const COST_ITEMS=["Kjøpspris","Frakt","Toll og avgifter","Registrering og besiktigelse","Forsikring første år","Lakk","Karosseri og rust","Motor","Girkasse og diff","Bremser","Understell og styring","Elektrisk","Interiør","Dekk og felger","Annet"];
+function viewCost(){
+  const v=store.get("cost",{});
+  const sum=COST_ITEMS.reduce((s,_,i)=>s+(+String(v[i]||"").replace(/\s/g,"").replace(",",".")||0),0);
+  return `<div class="note">Jeg har ikke funnet gode, kildebelagte priser for reparasjoner, så jeg har ikke lagt inn noen tall. Fyll inn tilbud fra verksteder og leverandører selv. Importavgifter tar du fra beregningen du allerede har fra vegvesenet.</div>
+  <div class="scroll"><table style="min-width:420px"><thead><tr><th>Post</th><th class="num">Beløp (NOK)</th></tr></thead><tbody>${COST_ITEMS.map((t,i)=>`<tr><td>${esc(t)}</td><td class="num"><input type="text" inputmode="decimal" data-cost="${i}" value="${esc(v[i]||"")}" aria-label="${esc(t)}"></td></tr>`).join("")}</tbody>
+  <tfoot><tr><th>Sum</th><th class="num" id="costsum">${Math.round(sum).toLocaleString("nb-NO")}</th></tr></tfoot></table></div>
+  <div class="ctl"><button data-costreset>Tøm</button></div>`;
+}
+
+function viewTools(){
+  const sub=state.tsub;
+  const tabs=[["sjekk","Sjekkliste"],["dekoder","Dekoder"],["sammenlign","Sammenlign biler"],["kost","Kostnadsregning"]];
+  const seg=`<div class="seg" role="group" aria-label="Verktøy">${tabs.map(([k,l])=>`<button data-tsub="${k}" aria-pressed="${sub===k}">${l}</button>`).join("")}</div>`;
+  const body={sjekk:viewChecklist,dekoder:viewDecoder,sammenlign:viewCompare,kost:viewCost}[sub]();
+  return `<section class="blk"><h3>Kjøpsverktøy <small>Sjekkliste, dekoder, sammenligning og kostnader</small></h3><div class="ctl">${seg}</div>${body}</section>`;
+}
+
+function viewSources(){
+  return `<section class="blk"><h3>Om dataene</h3>
+  <div class="note"><b>Slik er tallene merket</b><br>* betyr at tallet ikke er slått opp i kildene og bør dobbeltsjekkes mot Corvette Black Book eller NCRS. «Sekundærkilde» betyr at testen er hentet fra en samleside uten navngitt original.</div>
+  <ul class="l src">${SRC.map(s=>`<li><a href="${s[1]}" target="_blank" rel="noopener">${esc(s[0])}</a></li>`).join("")}</ul>
+  <p class="small" style="margin-top:14px">Rødmerking for tachometer, motoroppsett per år og testtall kan variere mellom kilder. Der kildene er uenige står det.</p></section>`;
+}
+
+const TABS=[["aar","Årsmodeller"],["motorer","Motorer"],["tid","0–60 mph"],["endringer","Endringer"],["vedlikehold","Vedlikehold"],["verktoy","Kjøpsverktøy"],["kilder","Kilder"]];
+function render(){
+  $("#nav").innerHTML=TABS.map(([k,l])=>`<button role="tab" data-view="${k}" aria-selected="${state.view===k}">${l}</button>`).join("");
+  $("#view").innerHTML={aar:viewYear,motorer:viewEngines,tid:viewTimes,endringer:viewChanges,vedlikehold:viewMaint,verktoy:viewTools,kilder:viewSources}[state.view]();
+  try{ history.replaceState(null,"","#"+(state.view==="aar"?state.year:state.view)); }catch(e){}
+}
+
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  if(b.dataset.view){state.view=b.dataset.view;render();window.scrollTo(0,0);}
+  else if(b.dataset.year){state.year=+b.dataset.year;render();}
+  else if(b.dataset.go){state.year=Math.max(1968,Math.min(1982,state.year+(+b.dataset.go)));render();window.scrollTo(0,0);}
+  else if(b.dataset.mode){state.mode=b.dataset.mode;render();}
+  else if(b.dataset.tsub){state.tsub=b.dataset.tsub;render();}
+  else if(b.dataset.clprint!==undefined){window.print();}
+  else if(b.dataset.clreset!==undefined){store.set("cl:"+toolsClYear(),{});render();}
+  else if(b.dataset.cmpreset!==undefined){store.set("cmpA",{});store.set("cmpB",{});render();}
+  else if(b.dataset.costreset!==undefined){store.set("cost",{});render();}
+  else if(b.dataset.msub){state.msub=b.dataset.msub;render();}
+  else if(b.dataset.tf){state.tfilter=b.dataset.tf;render();}
+});
+document.addEventListener("change",e=>{
+  const t=e.target;
+  if(t.dataset&&t.dataset.cl){const y=toolsClYear(),d=store.get("cl:"+y,{});d[t.dataset.cl]=t.checked;store.set("cl:"+y,d);
+    const items=clItems(y),n=items.filter(x=>d[x.id]).length,c=$("#clcount");if(c)c.textContent=n+" av "+items.length+" avkrysset";}
+  else if(t.dataset&&t.dataset.clyear!==undefined){store.set("clyear",+t.value);render();}
+});
+document.addEventListener("input",e=>{
+  const t=e.target, ds=t.dataset||{};
+  if(ds.dec){const o={vin:decodeVin,stamp:decodeStamp,axle:decodeAxle}[ds.dec](t.value);$("#dec-"+ds.dec).innerHTML=o;return;}
+  if(ds.clnotes!==undefined){store.set("clnotes:"+toolsClYear(),t.value);return;}
+  if(ds.cmp){const [w,i]=ds.cmp.split(":"),k="cmp"+w,o=store.get(k,{});o[i]=t.value;store.set(k,o);
+    const A=store.get("cmpA",{}),B=store.get("cmpB",{}),a=(A[i]||"").trim(),b=(B[i]||"").trim();
+    t.closest("tr").classList.toggle("cmp-diff",!!(a&&b&&a.toLowerCase()!==b.toLowerCase()));return;}
+  if(ds.cost!==undefined){const o=store.get("cost",{});o[ds.cost]=t.value;store.set("cost",o);
+    const s=COST_ITEMS.reduce((x,_,i)=>x+(+String(o[i]||"").replace(/\s/g,"").replace(",",".")||0),0);$("#costsum").textContent=Math.round(s).toLocaleString("nb-NO");return;}
+  if(t.id==="q"){state.q=e.target.value;const pos=e.target.selectionStart;render();const n=$("#q");n.focus();n.setSelectionRange(pos,pos);}
+});
+
+(function init(){
+  let h=""; try{h=location.hash.replace("#","");}catch(e){}
+  if(/^19(6[89]|7\d|8[0-2])$/.test(h)){state.year=+h;state.view="aar";}
+  else if(["motorer","tid","endringer","vedlikehold","verktoy","kilder"].includes(h)) state.view=h;
+  $("#stats").innerHTML=`<span>${Y.length} årsmodeller</span><span>${allRows().length} motorvarianter</span><span>${T.length} 0–60-tester</span>`;
+  render();
+})();
+</script>
+</body></html>
